@@ -99,4 +99,576 @@
             font-weight: 700;
             border-radius: 999px;
             border: 2px solid #fff3d4;
-            box-
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .genshin-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            color: #8c97a8;
+            transition: all 0.3s;
+        }
+        .nav-item.active {
+            color: #ebd69f;
+            text-shadow: 0 0 10px rgba(235, 214, 159, 0.5);
+        }
+        .nav-indicator {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: #ebd69f;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .nav-item.active .nav-indicator { opacity: 1; }
+
+        .star-loader {
+            color: #ebd69f;
+            font-size: 2rem;
+            animation: spin 2s linear infinite, pulseGlow 1s ease-in-out infinite alternate;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 5px #ebd69f; transform: scale(0.9); }
+            100% { text-shadow: 0 0 20px #ebd69f; transform: scale(1.1); }
+        }
+
+        .markdown-body { font-size: 0.95rem; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 { font-family: 'Cinzel', serif; color: #ebd69f; margin-top: 1em; margin-bottom: 0.5em; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+        .markdown-body p { margin-bottom: 1em; line-height: 1.5; }
+        .markdown-body strong { color: #fff3d4; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #cfb986; border-radius: 4px; }
+    </style>
+</head>
+<body class="flex flex-col h-screen w-full relative">
+
+    <div class="absolute inset-0 pointer-events-none opacity-20 z-0" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+    <!-- Header -->
+    <header class="pt-10 pb-4 px-6 z-10 shrink-0 text-center relative border-b border-genshin-border/30 bg-genshin-dark/80 backdrop-blur">
+        <h1 class="text-2xl text-genshin-gold font-bold tracking-wider drop-shadow-md">
+            <i class="fa-solid fa-compass mr-2 text-lg"></i> Paimon's Tracker
+        </h1>
+        <div id="auth-status" class="absolute top-2 right-4 text-xs text-genshin-gold/60 flex items-center gap-1">
+            <i class="fa-solid fa-wifi text-green-400"></i> Lokal Aktif
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto pb-24 z-10 scroll-smooth relative" id="app-container">
+        
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="page-view p-5 space-y-5">
+            <div class="genshin-panel p-5 text-center relative overflow-hidden">
+                <i class="fa-solid fa-sun absolute -right-6 -top-6 text-6xl text-genshin-gold/10"></i>
+                <p class="font-genshin text-sm text-genshin-gold/80 uppercase tracking-widest mb-1">Mora Limit (Budget)</p>
+                <h2 class="text-3xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" id="dash-budget">Rp 5.500.000</h2>
+                
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-black/30 p-3 rounded-lg border border-genshin-border/30">
+                        <p class="text-xs text-red-300 font-genshin mb-1">Terpakai</p>
+                        <p class="font-bold text-red-100" id="dash-spent">Rp 0</p>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-lg border border-genshin-border/30">
+                        <p class="text-xs text-green-300 font-genshin mb-1">Sisa Dana</p>
+                        <p class="font-bold text-green-100" id="dash-remaining">Rp 5.500.000</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4 h-2 w-full bg-black/50 rounded-full overflow-hidden border border-genshin-border/20">
+                    <div id="budget-progress" class="h-full bg-gradient-to-r from-green-400 to-red-400 transition-all duration-500 w-0"></div>
+                </div>
+            </div>
+
+            <div class="genshin-panel p-4">
+                <div class="flex justify-between items-center mb-4 border-b border-genshin-border/30 pb-2">
+                    <h3 class="font-genshin text-genshin-gold text-lg"><i class="fa-solid fa-scroll mr-2"></i>Riwayat Pengeluaran</h3>
+                </div>
+                <div id="recent-expenses" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                    <p class="text-center text-sm text-genshin-light/50 italic py-4">Belum ada catatan.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMERA -->
+        <div id="page-camera" class="page-view hidden p-5 space-y-4 h-full flex flex-col">
+            <div class="text-center mb-2">
+                <h2 class="font-genshin text-genshin-gold text-xl"><i class="fa-solid fa-camera mr-2"></i>Kamera Pengintai</h2>
+                <p class="text-xs text-genshin-light/70 mt-1">Scan struk belanja, biarkan AI mencatatnya!</p>
+            </div>
+            
+            <div class="flex-1 genshin-panel relative overflow-hidden flex flex-col items-center justify-center bg-black">
+                <video id="camera-feed" class="w-full h-full object-cover hidden" autoplay playsinline></video>
+                
+                <div id="camera-placeholder" class="text-center p-6">
+                    <i class="fa-solid fa-eye-slash text-4xl text-genshin-border/50 mb-3"></i>
+                    <p class="text-sm text-genshin-light/70">Kamera tidak aktif.</p>
+                    <button onclick="startCamera()" class="mt-4 px-4 py-2 border border-genshin-gold text-genshin-gold rounded-full text-sm hover:bg-genshin-gold/10 transition">
+                        <i class="fa-solid fa-power-off mr-1"></i> Aktifkan Kamera
+                    </button>
+                    
+                    <div class="mt-8 border-t border-genshin-border/30 pt-6">
+                        <p class="text-xs text-genshin-light/50 mb-3">Atau unggah foto struk</p>
+                        <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                        <label for="file-upload" class="px-4 py-2 bg-genshin-dark border border-genshin-border text-genshin-light rounded-full text-sm inline-block cursor-pointer">
+                            <i class="fa-solid fa-upload mr-1"></i> Pilih Foto
+                        </label>
+                    </div>
+                </div>
+                <canvas id="camera-canvas" class="hidden"></canvas>
+            </div>
+
+            <div class="flex justify-center gap-4 shrink-0 pb-4">
+                <button id="btn-capture" onclick="captureAndScan()" class="hidden w-16 h-16 rounded-full bg-genshin-gold border-4 border-white shadow-[0_0_15px_#ebd69f] flex items-center justify-center text-genshin-dark transition active:scale-90">
+                    <i class="fa-solid fa-camera text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- MANUAL -->
+        <div id="page-manual" class="page-view hidden p-5">
+            <h2 class="font-genshin text-genshin-gold text-xl text-center mb-6"><i class="fa-solid fa-pen-nib mr-2"></i>Catatan Manual</h2>
+            <div class="genshin-panel p-5">
+                <form id="form-manual" onsubmit="saveManualExpense(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-genshin text-genshin-gold mb-1">Nama Tempat/Barang</label>
+                        <input type="text" id="manual-title" required class="w-full genshin-input p-3" placeholder="Contoh: Nasi Warteg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-genshin text-genshin-gold mb-1">Jumlah (Rp)</label>
+                        <input type="number" id="manual-amount" required class="w-full genshin-input p-3" placeholder="15000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-genshin text-genshin-gold mb-1">Kategori</label>
+                        <select id="manual-cat" class="w-full genshin-input p-3">
+                            <option value="Makanan">Makanan Luar</option>
+                            <option value="Groceries">Bahan Masak</option>
+                            <option value="Transport">Transportasi</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full genshin-btn py-3 mt-4">Simpan Catatan</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- INVENTORY -->
+        <div id="page-inventory" class="page-view hidden p-5 space-y-5">
+            <div class="flex justify-between items-center">
+                <h2 class="font-genshin text-genshin-gold text-xl"><i class="fa-solid fa-box-open mr-2"></i>Inventory Kulkas</h2>
+                <button onclick="openInventoryModal()" class="w-8 h-8 rounded-full bg-genshin-dark border border-genshin-gold flex items-center justify-center text-genshin-gold">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+
+            <button onclick="callAIChef()" class="w-full genshin-panel p-4 flex items-center justify-center gap-3 hover:bg-genshin-gold/10 transition border-genshin-gold/80 shadow-[0_0_15px_rgba(235,214,159,0.2)] group cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-genshin-gold flex items-center justify-center text-genshin-dark group-hover:rotate-12 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="text-left">
+                    <h3 class="font-genshin text-genshin-gold font-bold">Xiangling's AI Chef</h3>
+                    <p class="text-xs text-genshin-light/70">Bikin resep dengan stok 1 Panci & Rice Cooker!</p>
+                </div>
+            </button>
+
+            <div class="genshin-panel p-2">
+                <ul id="inventory-list" class="divide-y divide-genshin-border/20"></ul>
+            </div>
+        </div>
+
+        <!-- SCHEDULE -->
+        <div id="page-schedule" class="page-view hidden p-5 space-y-4">
+            <h2 class="font-genshin text-genshin-gold text-xl text-center mb-2"><i class="fa-solid fa-list-check mr-2"></i>Jadwal Belanja</h2>
+            <form onsubmit="addScheduleTask(event)" class="flex gap-2">
+                <input type="text" id="task-input" required class="flex-1 genshin-input p-3 text-sm" placeholder="Tambah daftar belanja...">
+                <button type="submit" class="genshin-btn px-4 py-2"><i class="fa-solid fa-plus"></i></button>
+            </form>
+            <div class="genshin-panel p-2 mt-4">
+                <ul id="schedule-list" class="divide-y divide-genshin-border/20"></ul>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="page-settings" class="page-view hidden p-5 space-y-5">
+            <h2 class="font-genshin text-genshin-gold text-xl text-center mb-6"><i class="fa-solid fa-gear mr-2"></i>Pengaturan</h2>
+            <div class="genshin-panel p-5 space-y-6">
+                <div>
+                    <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-wallet mr-1"></i> Target Budget Bulanan</label>
+                    <input type="number" id="setting-budget" class="w-full genshin-input p-3" value="5500000">
+                </div>
+                <div>
+                    <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-key mr-1"></i> Gemini API Key</label>
+                    <input type="password" id="setting-apikey" class="w-full genshin-input p-3" placeholder="AIzaSy...">
+                    <p class="text-[10px] text-genshin-light/50 mt-1">Disimpan aman di memori lokal HP (Offline Storage) agar fitur AI Camera dan AI Chef berfungsi tanpa gagal.</p>
+                </div>
+                <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan Konfigurasi</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="absolute bottom-0 w-full h-16 bg-genshin-dark/95 border-t border-genshin-border/50 flex justify-around items-center z-40 backdrop-blur-md pb-2">
+        <button onclick="navigate('dashboard')" class="nav-item flex flex-col items-center p-2 relative active w-14">
+            <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+            <span class="text-[10px] font-genshin uppercase tracking-wider">Mora</span>
+            <div class="nav-indicator"></div>
+        </button>
+        <button onclick="navigate('manual')" class="nav-item flex flex-col items-center p-2 relative w-14">
+            <i class="fa-solid fa-pen-nib text-xl mb-1"></i>
+            <span class="text-[10px] font-genshin uppercase tracking-wider">Catat</span>
+            <div class="nav-indicator"></div>
+        </button>
+        <button onclick="navigate('camera')" class="nav-item flex flex-col items-center relative -top-5 w-16">
+            <div class="w-14 h-14 rounded-full bg-genshin-gold border-4 border-genshin-dark flex items-center justify-center shadow-[0_0_15px_#ebd69f] text-genshin-dark transform hover:scale-105 transition">
+                <i class="fa-solid fa-camera-retro text-2xl"></i>
+            </div>
+        </button>
+        <button onclick="navigate('inventory')" class="nav-item flex flex-col items-center p-2 relative w-14">
+            <i class="fa-solid fa-box-open text-xl mb-1"></i>
+            <span class="text-[10px] font-genshin uppercase tracking-wider">Tas</span>
+            <div class="nav-indicator"></div>
+        </button>
+        <button onclick="navigate('schedule')" class="nav-item flex flex-col items-center p-2 relative w-14">
+            <i class="fa-solid fa-list-check text-xl mb-1"></i>
+            <span class="text-[10px] font-genshin uppercase tracking-wider">Jadwal</span>
+            <div class="nav-indicator"></div>
+        </button>
+    </nav>
+    <button onclick="navigate('settings')" class="fixed top-12 right-6 w-8 h-8 flex items-center justify-center text-genshin-gold/70 hover:text-genshin-gold z-50">
+        <i class="fa-solid fa-gear text-xl drop-shadow-md"></i>
+    </button>
+
+    <!-- Modals -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center text-center px-6">
+        <i class="fa-solid fa-star star-loader mb-4"></i>
+        <h3 class="font-genshin text-genshin-gold text-lg mb-2">Memproses Ley Lines...</h3>
+        <p id="loading-text" class="text-sm text-genshin-light/80">AI sedang memikirkan strategi terbaik.</p>
+    </div>
+
+    <div id="ai-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="genshin-panel w-full max-w-lg max-h-[80vh] flex flex-col">
+            <div class="p-4 border-b border-genshin-border/30 flex justify-between items-center shrink-0">
+                <h3 class="font-genshin text-genshin-gold text-lg"><i class="fa-solid fa-utensils mr-2"></i>Resep Bertahan Hidup</h3>
+                <button onclick="closeModals()" class="text-genshin-light/50 hover:text-genshin-light p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="ai-modal-content" class="p-5 overflow-y-auto markdown-body flex-1"></div>
+        </div>
+    </div>
+
+    <div id="scan-review-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="genshin-panel w-full max-w-lg max-h-[85vh] flex flex-col">
+            <div class="p-4 border-b border-genshin-border/30 flex justify-between items-center shrink-0">
+                <h3 class="font-genshin text-genshin-gold text-lg"><i class="fa-solid fa-receipt mr-2"></i>Hasil Scan Paimon</h3>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 space-y-4">
+                <div>
+                    <label class="block text-xs font-genshin text-genshin-gold mb-1">Total (Rp)</label>
+                    <input type="number" id="scan-total" class="w-full genshin-input p-3 font-bold text-red-300">
+                </div>
+                <div>
+                    <label class="block text-xs font-genshin text-genshin-gold mb-1">Nama Tempat / Struk</label>
+                    <input type="text" id="scan-title" class="w-full genshin-input p-3" value="Belanja Grocery">
+                </div>
+                <div>
+                    <h4 class="text-sm font-genshin text-genshin-gold mb-2 mt-4">Barang Terdeteksi</h4>
+                    <div id="scan-items-container" class="space-y-2 max-h-40 overflow-y-auto p-2 bg-black/30 border border-genshin-border/20 rounded"></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-genshin-border/30 flex gap-3 shrink-0">
+                <button onclick="closeModals()" class="flex-1 px-4 py-3 bg-genshin-dark border border-genshin-border text-genshin-light rounded-full font-genshin">Batal</button>
+                <button onclick="confirmScanSave()" class="flex-1 genshin-btn py-3">Simpan Semua</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="inventory-add-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="genshin-panel w-full max-w-sm">
+            <div class="p-4 border-b border-genshin-border/30 flex justify-between items-center">
+                <h3 class="font-genshin text-genshin-gold">Tambah Barang</h3>
+                <button onclick="closeModals()" class="text-genshin-light/50"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveInventoryManual(event)" class="p-4 space-y-3">
+                <input type="text" id="inv-name" required class="w-full genshin-input p-3 text-sm" placeholder="Nama Barang">
+                <input type="text" id="inv-qty" required class="w-full genshin-input p-3 text-sm" placeholder="Jumlah (Misal: 1/2 Kg)">
+                <button type="submit" class="w-full genshin-btn py-2 mt-2">Masuk Tas</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-16 left-1/2 transform -translate-x-1/2 -translate-y-20 opacity-0 transition-all duration-300 z-50 bg-genshin-panel border border-genshin-gold px-6 py-3 rounded-full shadow-lg flex items-center gap-3">
+        <i id="toast-icon" class="fa-solid fa-check text-green-400"></i>
+        <span id="toast-msg" class="text-sm font-genshin tracking-wide">Tersimpan</span>
+    </div>
+
+    <!-- App Logic (Local Storage Ver) -->
+    <script>
+        const state = {
+            budget: 5500000,
+            apiKey: '',
+            expenses: [],
+            inventory: [],
+            schedule: [],
+            scannedItemsCache: []
+        };
+
+        const UI = {
+            formatIDR: (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0),
+            showToast: (msg, type = 'success') => {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-msg').textContent = msg;
+                document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-check text-green-400' : 'fa-solid fa-circle-exclamation text-red-400';
+                toast.classList.remove('-translate-y-20', 'opacity-0');
+                setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3000);
+            },
+            showLoading: (text = "Memproses...") => {
+                document.getElementById('loading-text').textContent = text;
+                document.getElementById('loading-overlay').classList.remove('hidden');
+            },
+            hideLoading: () => document.getElementById('loading-overlay').classList.add('hidden'),
+            closeAllModals: () => {
+                ['ai-modal', 'scan-review-modal', 'inventory-add-modal'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+            }
+        };
+        window.closeModals = UI.closeAllModals;
+
+        window.navigate = (pageId) => {
+            if (pageId !== 'camera' && window.localStream) {
+                window.localStream.getTracks().forEach(track => track.stop());
+                document.getElementById('camera-feed').classList.add('hidden');
+                document.getElementById('camera-placeholder').classList.remove('hidden');
+                document.getElementById('btn-capture').classList.add('hidden');
+            }
+            document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(pageId !== 'settings') {
+                const btnIndex = ['dashboard', 'manual', 'camera', 'inventory', 'schedule'].indexOf(pageId);
+                if (btnIndex >= 0) document.querySelectorAll('.nav-item')[btnIndex].classList.add('active');
+            }
+        };
+
+        function saveData() {
+            localStorage.setItem('paimon_data', JSON.stringify(state));
+            updateDashboard();
+            renderInventory();
+            renderSchedule();
+        }
+
+        function initApp() {
+            const data = JSON.parse(localStorage.getItem('paimon_data')) || {};
+            state.budget = data.budget || 5500000;
+            state.apiKey = data.apiKey || '';
+            state.expenses = data.expenses || [];
+            state.inventory = data.inventory || [];
+            state.schedule = data.schedule || [];
+
+            document.getElementById('setting-budget').value = state.budget;
+            document.getElementById('setting-apikey').value = state.apiKey;
+            saveData();
+        }
+
+        function updateDashboard() {
+            document.getElementById('dash-budget').textContent = UI.formatIDR(state.budget);
+            const totalSpent = state.expenses.reduce((sum, item) => sum + parseInt(item.amount), 0);
+            document.getElementById('dash-spent').textContent = UI.formatIDR(totalSpent);
+            document.getElementById('dash-remaining').textContent = UI.formatIDR(state.budget - totalSpent);
+            
+            let pct = (totalSpent / state.budget) * 100;
+            document.getElementById('budget-progress').style.width = `${Math.min(pct, 100)}%`;
+
+            const listEl = document.getElementById('recent-expenses');
+            if(state.expenses.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-sm text-genshin-light/50 py-4">Belum ada pengeluaran.</p>';
+            } else {
+                listEl.innerHTML = state.expenses.sort((a,b) => b.id - a.id).slice(0, 10).map(item => `
+                    <div class="flex justify-between items-center p-3 bg-black/40 rounded border border-genshin-border/20 mb-2">
+                        <div>
+                            <p class="font-bold text-sm text-genshin-light">${item.title}</p>
+                            <p class="text-[10px] text-genshin-light/50">${new Date(item.id).toLocaleDateString('id-ID')} • ${item.category}</p>
+                        </div>
+                        <div class="text-red-300 font-bold text-sm">- ${UI.formatIDR(item.amount)}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.saveSettings = () => {
+            state.budget = parseInt(document.getElementById('setting-budget').value) || 5500000;
+            state.apiKey = document.getElementById('setting-apikey').value.trim();
+            saveData();
+            UI.showToast('Pengaturan Tersimpan!');
+        };
+
+        window.saveManualExpense = (e) => {
+            e.preventDefault();
+            state.expenses.push({
+                id: Date.now(),
+                title: document.getElementById('manual-title').value,
+                amount: parseInt(document.getElementById('manual-amount').value),
+                category: document.getElementById('manual-cat').value
+            });
+            document.getElementById('form-manual').reset();
+            saveData();
+            UI.showToast('Pengeluaran berhasil dicatat!');
+            navigate('dashboard');
+        };
+
+        // Camera Logic
+        window.startCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }});
+                const video = document.getElementById('camera-feed');
+                video.srcObject = stream;
+                window.localStream = stream;
+                video.classList.remove('hidden');
+                document.getElementById('camera-placeholder').classList.add('hidden');
+                document.getElementById('btn-capture').classList.remove('hidden');
+            } catch(err) {
+                UI.showToast('Akses kamera ditolak.', 'error');
+            }
+        };
+
+        window.handleFileUpload = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => processReceipt(event.target.result.split(',')[1]);
+            reader.readAsDataURL(file);
+        };
+
+        window.captureAndScan = () => {
+            const video = document.getElementById('camera-feed');
+            const canvas = document.getElementById('camera-canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            processReceipt(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+        };
+
+        async function fetchGemini(prompt, base64Image = null, isJson = false) {
+            if(!state.apiKey) throw new Error("NO_KEY");
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${state.apiKey}`;
+            const payload = { contents: [{ parts: [{text: prompt}] }] };
+            if(base64Image) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Image } });
+            if(isJson) payload.generationConfig = { responseMimeType: "application/json" };
+
+            const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            if(!response.ok) throw new Error("API Error");
+            const result = await response.json();
+            return result.candidates[0].content.parts[0].text;
+        }
+
+        async function processReceipt(base64) {
+            UI.showLoading("Membaca struk...");
+            try {
+                const jsonStr = await fetchGemini(`Analisa foto struk belanja ini. Ekstrak total harga akhir (angka saja) dan daftar barang yang dibeli (nama barang dan jumlah/kuantitas). Kembalikan HANYA format JSON murni: {"total": 50000, "items": [{"name": "Minyak", "qty": "1"}]}`, base64, true);
+                const data = JSON.parse(jsonStr);
+                
+                document.getElementById('scan-total').value = data.total || 0;
+                state.scannedItemsCache = data.items || [];
+                
+                const container = document.getElementById('scan-items-container');
+                container.innerHTML = state.scannedItemsCache.map(it => `<div class="flex justify-between border-b border-genshin-border/10 pb-1 text-sm"><span>${it.name}</span><span class="text-genshin-gold">${it.qty}</span></div>`).join('');
+                
+                UI.hideLoading();
+                document.getElementById('scan-review-modal').classList.remove('hidden');
+            } catch(e) {
+                UI.hideLoading();
+                if(e.message === "NO_KEY") { UI.showToast("API Key kosong!", "error"); navigate('settings'); } 
+                else UI.showToast("Gagal membaca struk.", "error");
+            }
+        }
+
+        window.confirmScanSave = () => {
+            const total = parseInt(document.getElementById('scan-total').value) || 0;
+            if(total > 0) state.expenses.push({ id: Date.now(), title: document.getElementById('scan-title').value || "Belanja", amount: total, category: "Scan Struk" });
+            
+            state.scannedItemsCache.forEach((it, i) => {
+                state.inventory.push({ id: Date.now() + i, name: it.name, qty: it.qty });
+            });
+            saveData();
+            UI.closeAllModals();
+            UI.showToast("Data tersimpan!");
+            navigate('dashboard');
+        };
+
+        // Inventory
+        window.openInventoryModal = () => document.getElementById('inventory-add-modal').classList.remove('hidden');
+        window.saveInventoryManual = (e) => {
+            e.preventDefault();
+            state.inventory.push({ id: Date.now(), name: document.getElementById('inv-name').value, qty: document.getElementById('inv-qty').value });
+            document.getElementById('inv-name').value = ''; document.getElementById('inv-qty').value = '';
+            saveData();
+            UI.closeAllModals();
+            UI.showToast("Masuk ke tas!");
+        };
+        window.deleteInventory = (id) => { state.inventory = state.inventory.filter(i => i.id != id); saveData(); };
+        function renderInventory() {
+            document.getElementById('inventory-list').innerHTML = state.inventory.map(i => `
+                <li class="flex justify-between items-center py-3 px-2">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-leaf text-genshin-gold/70"></i>
+                        <div><p class="font-bold text-sm">${i.name}</p><p class="text-[10px] text-genshin-gold">${i.qty}</p></div>
+                    </div>
+                    <button onclick="deleteInventory(${i.id})" class="text-red-400/70 p-2"><i class="fa-solid fa-trash"></i></button>
+                </li>
+            `).join('');
+        }
+
+        // AI Chef
+        window.callAIChef = async () => {
+            if(!state.apiKey) { UI.showToast("API Key kosong!", "error"); navigate('settings'); return; }
+            const invStr = state.inventory.map(i => `- ${i.name} (${i.qty})`).join('\n');
+            UI.showLoading("Memikirkan resep...");
+            try {
+                const markdown = await fetchGemini(`Kamu Xiangling dari Genshin Impact. Buat 1 resep dari bahan ini yang hanya pakai 1 panci elektrik/rice cooker: \n${invStr || '(Kosong, beri resep minimarket murah)'}. Format markdown, bahasa gaul.`);
+                document.getElementById('ai-modal-content').innerHTML = marked.parse(markdown);
+                UI.hideLoading();
+                document.getElementById('ai-modal').classList.remove('hidden');
+            } catch(e) { UI.hideLoading(); UI.showToast("Gagal memanggil AI.", "error"); }
+        };
+
+        // Schedule
+        window.addScheduleTask = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('task-input');
+            state.schedule.push({ id: Date.now(), task: input.value.trim(), done: false });
+            input.value = '';
+            saveData();
+        };
+        window.toggleTask = (id) => {
+            const task = state.schedule.find(t => t.id == id);
+            if(task) task.done = !task.done;
+            saveData();
+        };
+        window.deleteTask = (id) => { state.schedule = state.schedule.filter(t => t.id != id); saveData(); };
+        function renderSchedule() {
+            const sorted = state.schedule.sort((a,b) => (a.done === b.done)? 0 : a.done? 1 : -1);
+            document.getElementById('schedule-list').innerHTML = sorted.map(t => `
+                <li class="flex justify-between items-center py-3 px-2 ${t.done ? 'opacity-50' : ''}">
+                    <div class="flex gap-3 cursor-pointer flex-1" onclick="toggleTask(${t.id})">
+                        <div class="w-5 h-5 rounded-full border-2 border-genshin-gold flex items-center justify-center">${t.done ? '<div class="w-3 h-3 bg-genshin-gold rounded-full"></div>' : ''}</div>
+                        <span class="text-sm ${t.done ? 'line-through' : ''}">${t.task}</span>
+                    </div>
+                    <button onclick="deleteTask(${t.id})" class="text-red-400/50 p-2"><i class="fa-solid fa-xmark"></i></button>
+                </li>
+            `).join('');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { initApp(); navigate('dashboard'); });
+    </script>
+</body>
+</html>
