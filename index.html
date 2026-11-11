@@ -14,7 +14,7 @@
     <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- LOGO APLIKASI (Pastikan file logo.jpg ada di GitHub) -->
+    <!-- LOGO APLIKASI -->
     <link rel="icon" href="logo.jpg">
     <link rel="apple-touch-icon" href="logo.jpg">
 
@@ -45,107 +45,42 @@
             font-family: 'Nunito', sans-serif;
             color: #ece5d8;
             background-color: #1a1e29;
-            /* Kamu bisa mengganti URL di bawah dengan 'logo.jpg' jika ingin karakternya jadi background */
             background-image: radial-gradient(circle at 50% 0%, #2a3449 0%, #11141d 100%);
             background-attachment: fixed;
             background-size: cover;
             background-position: center;
             overflow: hidden; 
         }
-        
-        h1, h2, h3, .font-genshin {
-            font-family: 'Cinzel', serif;
-            letter-spacing: 0.05em;
-        }
-
+        h1, h2, h3, .font-genshin { font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
         .genshin-panel {
-            background: rgba(36, 43, 59, 0.9);
-            border: 2px solid #cfb986;
-            border-radius: 12px;
+            background: rgba(36, 43, 59, 0.9); border: 2px solid #cfb986; border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(235, 214, 159, 0.05);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            position: relative;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: relative;
         }
-
         .genshin-panel::before, .genshin-panel::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 2px solid #ebd69f;
-            border-radius: 50%;
+            content: ''; position: absolute; width: 10px; height: 10px; border: 2px solid #ebd69f; border-radius: 50%;
         }
         .genshin-panel::before { top: -6px; left: -6px; background: #242b3b; }
         .genshin-panel::after { bottom: -6px; right: -6px; background: #242b3b; }
-
-        .genshin-input {
-            background: rgba(17, 20, 29, 0.8);
-            border: 1px solid #756a52;
-            color: #ece5d8;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-        .genshin-input:focus {
-            border-color: #ebd69f;
-            box-shadow: 0 0 8px rgba(235, 214, 159, 0.3);
-            outline: none;
-        }
-
+        .genshin-input { background: rgba(17, 20, 29, 0.8); border: 1px solid #756a52; color: #ece5d8; border-radius: 6px; transition: all 0.3s; }
+        .genshin-input:focus { border-color: #ebd69f; box-shadow: 0 0 8px rgba(235, 214, 159, 0.3); outline: none; }
         .genshin-btn {
-            background: linear-gradient(135deg, #e3cba0, #c4a773);
-            color: #1a1e29;
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            border-radius: 999px;
-            border: 2px solid #fff3d4;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.1s, box-shadow 0.1s;
+            background: linear-gradient(135deg, #e3cba0, #c4a773); color: #1a1e29; font-family: 'Cinzel', serif; font-weight: 700;
+            border-radius: 999px; border: 2px solid #fff3d4; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.1s, box-shadow 0.1s;
         }
-        .genshin-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .nav-item {
-            color: #8c97a8;
-            transition: all 0.3s;
-        }
-        .nav-item.active {
-            color: #ebd69f;
-            text-shadow: 0 0 10px rgba(235, 214, 159, 0.5);
-        }
-        .nav-indicator {
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 5px;
-            height: 5px;
-            background: #ebd69f;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
+        .genshin-btn:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .nav-item { color: #8c97a8; transition: all 0.3s; }
+        .nav-item.active { color: #ebd69f; text-shadow: 0 0 10px rgba(235, 214, 159, 0.5); }
+        .nav-indicator { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: #ebd69f; border-radius: 50%; opacity: 0; transition: opacity 0.3s; }
         .nav-item.active .nav-indicator { opacity: 1; }
-
-        .star-loader {
-            color: #ebd69f;
-            font-size: 2rem;
-            animation: spin 2s linear infinite, pulseGlow 1s ease-in-out infinite alternate;
-        }
+        .star-loader { color: #ebd69f; font-size: 2rem; animation: spin 2s linear infinite, pulseGlow 1s ease-in-out infinite alternate; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulseGlow {
-            0% { text-shadow: 0 0 5px #ebd69f; transform: scale(0.9); }
-            100% { text-shadow: 0 0 20px #ebd69f; transform: scale(1.1); }
-        }
-
+        @keyframes pulseGlow { 0% { text-shadow: 0 0 5px #ebd69f; transform: scale(0.9); } 100% { text-shadow: 0 0 20px #ebd69f; transform: scale(1.1); } }
         .markdown-body { font-size: 0.95rem; }
         .markdown-body h1, .markdown-body h2, .markdown-body h3 { font-family: 'Cinzel', serif; color: #ebd69f; margin-top: 1em; margin-bottom: 0.5em; }
         .markdown-body ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
         .markdown-body p { margin-bottom: 1em; line-height: 1.5; }
         .markdown-body strong { color: #fff3d4; }
-
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: #cfb986; border-radius: 4px; }
@@ -155,7 +90,6 @@
 
     <div class="absolute inset-0 pointer-events-none opacity-20 z-0" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px;"></div>
 
-    <!-- Header -->
     <header class="pt-10 pb-4 px-6 z-10 shrink-0 text-center relative border-b border-genshin-border/30 bg-genshin-dark/80 backdrop-blur">
         <h1 class="text-2xl text-genshin-gold font-bold tracking-wider drop-shadow-md">
             <i class="fa-solid fa-compass mr-2 text-lg"></i> Paimon's Tracker
@@ -165,7 +99,6 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto pb-24 z-10 scroll-smooth relative" id="app-container">
         
         <!-- DASHBOARD -->
@@ -220,9 +153,10 @@
                     
                     <div class="mt-8 border-t border-genshin-border/30 pt-6">
                         <p class="text-xs text-genshin-light/50 mb-3">Atau unggah foto struk</p>
-                        <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                        <!-- Ditambahkan capture="environment" agar memicu kamera HP secara native -->
+                        <input type="file" id="file-upload" accept="image/*" capture="environment" class="hidden" onchange="handleFileUpload(event)">
                         <label for="file-upload" class="px-4 py-2 bg-genshin-dark border border-genshin-border text-genshin-light rounded-full text-sm inline-block cursor-pointer">
-                            <i class="fa-solid fa-upload mr-1"></i> Pilih Foto
+                            <i class="fa-solid fa-upload mr-1"></i> Pilih Foto / Buka Kamera
                         </label>
                     </div>
                 </div>
@@ -309,8 +243,8 @@
                 </div>
                 <div>
                     <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-key mr-1"></i> Gemini API Key</label>
-                    <input type="password" id="setting-apikey" class="w-full genshin-input p-3" placeholder="AIzaSy...">
-                    <p class="text-[10px] text-genshin-light/50 mt-1">Disimpan aman di memori lokal HP (Offline Storage) agar fitur AI Camera dan AI Chef berfungsi tanpa gagal.</p>
+                    <input type="password" id="setting-apikey" class="w-full genshin-input p-3">
+                    <p class="text-[10px] text-genshin-light/50 mt-1">Disimpan aman di memori lokal HP (Offline Storage). Key default sudah tertanam otomatis.</p>
                 </div>
                 <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan Konfigurasi</button>
             </div>
@@ -411,11 +345,12 @@
         <span id="toast-msg" class="text-sm font-genshin tracking-wide">Tersimpan</span>
     </div>
 
-    <!-- App Logic (Local Storage Ver) -->
+    <!-- App Logic (Local Storage Ver with Hardcoded API Key) -->
     <script>
         const state = {
             budget: 5500000,
-            apiKey: '',
+            // API KEY DEFAULT DITANAM DI SINI
+            apiKey: 'AQ.Ab8RN6JMigur_4qIW0G5eJ0LPG3MCRTVfjCQJ-fn-AblXrzRug', 
             expenses: [],
             inventory: [],
             schedule: [],
@@ -470,7 +405,8 @@
         function initApp() {
             const data = JSON.parse(localStorage.getItem('paimon_data')) || {};
             state.budget = data.budget || 5500000;
-            state.apiKey = data.apiKey || '';
+            // Selalu gunakan key default ini jika user belum menggantinya dengan key AIzaSy...
+            state.apiKey = data.apiKey || 'AQ.Ab8RN6JMigur_4qIW0G5eJ0LPG3MCRTVfjCQJ-fn-AblXrzRug';
             state.expenses = data.expenses || [];
             state.inventory = data.inventory || [];
             state.schedule = data.schedule || [];
@@ -588,7 +524,7 @@
             } catch(e) {
                 UI.hideLoading();
                 if(e.message === "NO_KEY") { UI.showToast("API Key kosong!", "error"); navigate('settings'); } 
-                else UI.showToast("Gagal membaca struk.", "error");
+                else UI.showToast("Gagal membaca struk. Pastikan API Key Valid.", "error");
             }
         }
 
@@ -638,7 +574,7 @@
                 document.getElementById('ai-modal-content').innerHTML = marked.parse(markdown);
                 UI.hideLoading();
                 document.getElementById('ai-modal').classList.remove('hidden');
-            } catch(e) { UI.hideLoading(); UI.showToast("Gagal memanggil AI.", "error"); }
+            } catch(e) { UI.hideLoading(); UI.showToast("Gagal memanggil AI. Pastikan API Key Valid.", "error"); }
         };
 
         // Schedule
