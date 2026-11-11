@@ -14,7 +14,6 @@
     <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- LOGO APLIKASI -->
     <link rel="icon" href="logo.jpg">
     <link rel="apple-touch-icon" href="logo.jpg">
 
@@ -95,7 +94,7 @@
             <i class="fa-solid fa-compass mr-2 text-lg"></i> Paimon's Tracker
         </h1>
         <div id="auth-status" class="absolute top-2 right-4 text-xs text-genshin-gold/60 flex items-center gap-1">
-            <i class="fa-solid fa-wifi text-green-400"></i> Lokal Aktif
+            <i class="fa-solid fa-wifi text-green-400"></i> v3.0 Live
         </div>
     </header>
 
@@ -243,9 +242,11 @@
                 <div>
                     <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-key mr-1"></i> Gemini API Key</label>
                     <input type="password" id="setting-apikey" class="w-full genshin-input p-3">
-                    <p class="text-[10px] text-genshin-light/50 mt-1">Disimpan aman di memori lokal HP (Offline Storage). Key dari foto Google AI Studio sudah tertanam otomatis.</p>
                 </div>
                 <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan Konfigurasi</button>
+                <button onclick="resetAppMemory()" class="w-full bg-red-900/50 border border-red-500 text-red-200 rounded-full py-2 text-xs font-genshin mt-2">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset Data Lokal Cache
+                </button>
             </div>
         </div>
     </main>
@@ -344,14 +345,12 @@
         <span id="toast-msg" class="text-sm font-genshin tracking-wide">Tersimpan</span>
     </div>
 
-    <!-- App Logic -->
     <script>
-        // EXACT API KEY DARI FOTO GOOGLE AI STUDIO KAMU
-        const DEFAULT_KEY = 'AQ.Ab8RN6K_pbzcO8uTre3YT-ZC-cbIcqfJMM9_TSUYFBE_kxdW2w';
+        const VALID_KEY = 'AQ.Ab8RN6K_pbzcO8uTre3YT-ZC-cbIcqfJMM9_TSUYFBE_kxdW2w';
 
         const state = {
             budget: 5500000,
-            apiKey: DEFAULT_KEY, 
+            apiKey: VALID_KEY, 
             expenses: [],
             inventory: [],
             schedule: [],
@@ -365,7 +364,7 @@
                 document.getElementById('toast-msg').textContent = msg;
                 document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-check text-green-400' : 'fa-solid fa-circle-exclamation text-red-400';
                 toast.classList.remove('-translate-y-20', 'opacity-0');
-                setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3500);
+                setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 4000);
             },
             showLoading: (text = "Memproses...") => {
                 document.getElementById('loading-text').textContent = text;
@@ -397,16 +396,16 @@
         };
 
         function saveData() {
-            localStorage.setItem('paimon_data', JSON.stringify(state));
+            localStorage.setItem('paimon_data_v3', JSON.stringify(state));
             updateDashboard();
             renderInventory();
             renderSchedule();
         }
 
         function initApp() {
-            const data = JSON.parse(localStorage.getItem('paimon_data')) || {};
+            const data = JSON.parse(localStorage.getItem('paimon_data_v3')) || {};
             state.budget = data.budget || 5500000;
-            state.apiKey = data.apiKey || DEFAULT_KEY;
+            state.apiKey = VALID_KEY; 
             state.expenses = data.expenses || [];
             state.inventory = data.inventory || [];
             state.schedule = data.schedule || [];
@@ -415,6 +414,12 @@
             document.getElementById('setting-apikey').value = state.apiKey;
             saveData();
         }
+
+        window.resetAppMemory = () => {
+            localStorage.clear(); // Bersihkan semua memori cache lokal browser
+            initApp();
+            UI.showToast('Memori Cache Berhasil Dibersihkan!');
+        };
 
         function updateDashboard() {
             document.getElementById('dash-budget').textContent = UI.formatIDR(state.budget);
@@ -443,7 +448,7 @@
 
         window.saveSettings = () => {
             state.budget = parseInt(document.getElementById('setting-budget').value) || 5500000;
-            state.apiKey = document.getElementById('setting-apikey').value.trim() || DEFAULT_KEY;
+            state.apiKey = document.getElementById('setting-apikey').value.trim() || VALID_KEY;
             saveData();
             UI.showToast('Pengaturan Tersimpan!');
         };
@@ -494,44 +499,55 @@
             processReceipt(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
         };
 
-        // Multi-Model Fetch Handler dengan pesan error transparan
+        // SYSTEM AUTO-FALLBACK: Coba berbagai versi API Google
         async function fetchGemini(prompt, base64Image = null, isJson = false) {
-            const keyToUse = state.apiKey || DEFAULT_KEY;
-            if(!keyToUse) throw new Error("API Key kosong");
+            const keyToUse = state.apiKey || VALID_KEY;
+            
+            // Daftar endpoint yang sering berubah-ubah di server Google
+            const endpoints = [
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${keyToUse}`,
+                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${keyToUse}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${keyToUse}`
+            ];
 
-            // Coba beberapa endpoint model AI yang aktif
-            const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
-            let lastErr = null;
+            let lastErr = "";
+            const payload = { contents: [{ parts: [{text: prompt}] }] };
+            if(base64Image) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Image } });
+            if(isJson) payload.generationConfig = { responseMimeType: "application/json" };
 
-            for (const model of models) {
+            // Coba panggil server satu per satu sampai ada yang cocok
+            for (const url of endpoints) {
                 try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keyToUse}`;
-                    const payload = { contents: [{ parts: [{text: prompt}] }] };
-                    if(base64Image) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Image } });
-                    if(isJson) payload.generationConfig = { responseMimeType: "application/json" };
-
-                    const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                    const response = await fetch(url, { 
+                        method: 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify(payload) 
+                    });
+                    
                     const result = await response.json();
                     
-                    if(!response.ok) {
-                        throw new Error(result.error?.message || `HTTP ${response.status}`);
+                    if(response.ok && result.candidates) {
+                        return result.candidates[0].content.parts[0].text; // BERHASIL!
+                    } else {
+                        lastErr = result.error?.message || `Error ${response.status}`;
+                        console.warn("Mencoba jalur server lain karena:", lastErr);
+                        continue; 
                     }
-                    
-                    const resText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if(resText) return resText;
-                } catch(err) {
-                    console.warn(`Model ${model} gagal:`, err);
-                    lastErr = err;
+                } catch(e) {
+                    lastErr = e.message;
                 }
             }
-            throw lastErr || new Error("Gagal terhubung ke AI");
+            throw new Error(lastErr || "Semua koneksi ditolak server AI.");
         }
 
         async function processReceipt(base64) {
             UI.showLoading("Membaca struk...");
             try {
-                const jsonStr = await fetchGemini(`Analisa foto struk ini. Ekstrak total harga akhir (angka) dan daftar barang (nama dan kuantitas). Format JSON murni: {"total": 50000, "items": [{"name": "Minyak", "qty": "1"}]}`, base64, true);
-                const data = JSON.parse(jsonStr);
+                const jsonStr = await fetchGemini(`Analisa foto struk ini. Ekstrak total harga akhir (angka saja) dan daftar barang (nama dan kuantitas). Format JSON: {"total": 50000, "items": [{"name": "Minyak", "qty": "1"}]}`, base64, true);
+                
+                // Regex pembersih markdown (jika AI membandel)
+                const cleanJson = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+                const data = JSON.parse(cleanJson);
                 
                 document.getElementById('scan-total').value = data.total || 0;
                 state.scannedItemsCache = data.items || [];
@@ -543,7 +559,7 @@
                 document.getElementById('scan-review-modal').classList.remove('hidden');
             } catch(e) {
                 UI.hideLoading();
-                UI.showToast(`Error AI: ${e.message}`, "error");
+                UI.showToast(`[Error Server]: ${e.message}`, "error");
             }
         }
 
@@ -594,7 +610,7 @@
                 document.getElementById('ai-modal').classList.remove('hidden');
             } catch(e) { 
                 UI.hideLoading(); 
-                UI.showToast(`Error AI Chef: ${e.message}`, "error"); 
+                UI.showToast(`[Error Server]: ${e.message}`, "error"); 
             }
         };
 
