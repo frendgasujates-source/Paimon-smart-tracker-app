@@ -14,9 +14,6 @@
     <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <link rel="icon" href="logo.jpg">
-    <link rel="apple-touch-icon" href="logo.jpg">
-
     <script>
         tailwind.config = {
             theme: {
@@ -89,15 +86,28 @@
 
     <div class="absolute inset-0 pointer-events-none opacity-20 z-0" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px;"></div>
 
-    <header class="pt-10 pb-4 px-6 z-10 shrink-0 text-center relative border-b border-genshin-border/30 bg-genshin-dark/80 backdrop-blur">
-        <h1 class="text-2xl text-genshin-gold font-bold tracking-wider drop-shadow-md">
-            <i class="fa-solid fa-compass mr-2 text-lg"></i> Paimon's Tracker
-        </h1>
-        <div id="auth-status" class="absolute top-2 right-4 text-xs text-genshin-gold/60 flex items-center gap-1">
-            <i class="fa-solid fa-wifi text-green-400"></i> v3.0 Live
+    <!-- Header dengan Profile Picture -->
+    <header class="pt-8 pb-3 px-6 z-10 shrink-0 flex items-center justify-between border-b border-genshin-border/30 bg-genshin-dark/90 backdrop-blur">
+        <div class="flex items-center gap-3">
+            <div onclick="navigate('settings')" class="w-10 h-10 rounded-full border-2 border-genshin-gold overflow-hidden bg-black/50 cursor-pointer flex items-center justify-center shadow-[0_0_10px_#ebd69f]">
+                <img id="header-avatar" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                <i id="header-avatar-placeholder" class="fa-solid fa-user text-genshin-gold text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg text-genshin-gold font-bold tracking-wider leading-tight drop-shadow-md">
+                    Paimon's Tracker
+                </h1>
+                <div class="text-[10px] text-genshin-gold/60 flex items-center gap-1">
+                    <i class="fa-solid fa-wifi text-green-400"></i> AI v3.x Terhubung
+                </div>
+            </div>
         </div>
+        <button onclick="navigate('settings')" class="w-8 h-8 flex items-center justify-center text-genshin-gold/70 hover:text-genshin-gold">
+            <i class="fa-solid fa-gear text-xl"></i>
+        </button>
     </header>
 
+    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto pb-24 z-10 scroll-smooth relative" id="app-container">
         
         <!-- DASHBOARD -->
@@ -133,42 +143,25 @@
             </div>
         </div>
 
-        <!-- CAMERA -->
+        <!-- CAMERA SCANNER -->
         <div id="page-camera" class="page-view hidden p-5 space-y-4 h-full flex flex-col">
             <div class="text-center mb-2">
                 <h2 class="font-genshin text-genshin-gold text-xl"><i class="fa-solid fa-camera mr-2"></i>Kamera Pengintai</h2>
                 <p class="text-xs text-genshin-light/70 mt-1">Scan struk belanja, biarkan AI mencatatnya!</p>
             </div>
             
-            <div class="flex-1 genshin-panel relative overflow-hidden flex flex-col items-center justify-center bg-black">
-                <video id="camera-feed" class="w-full h-full object-cover hidden" autoplay playsinline></video>
+            <div class="flex-1 genshin-panel relative overflow-hidden flex flex-col items-center justify-center bg-black/60 p-6 text-center">
+                <i class="fa-solid fa-receipt text-5xl text-genshin-gold/50 mb-4 animate-bounce"></i>
+                <p class="text-sm text-genshin-light/80 mb-4">Pilih atau foto struk belanjaanmu dari HP/Laptop</p>
                 
-                <div id="camera-placeholder" class="text-center p-6">
-                    <i class="fa-solid fa-eye-slash text-4xl text-genshin-border/50 mb-3"></i>
-                    <p class="text-sm text-genshin-light/70">Kamera tidak aktif.</p>
-                    <button onclick="startCamera()" class="mt-4 px-4 py-2 border border-genshin-gold text-genshin-gold rounded-full text-sm hover:bg-genshin-gold/10 transition">
-                        <i class="fa-solid fa-power-off mr-1"></i> Aktifkan Kamera
-                    </button>
-                    
-                    <div class="mt-8 border-t border-genshin-border/30 pt-6">
-                        <p class="text-xs text-genshin-light/50 mb-3">Atau unggah foto struk</p>
-                        <input type="file" id="file-upload" accept="image/*" capture="environment" class="hidden" onchange="handleFileUpload(event)">
-                        <label for="file-upload" class="px-4 py-2 bg-genshin-dark border border-genshin-border text-genshin-light rounded-full text-sm inline-block cursor-pointer">
-                            <i class="fa-solid fa-upload mr-1"></i> Pilih Foto / Buka Kamera
-                        </label>
-                    </div>
-                </div>
-                <canvas id="camera-canvas" class="hidden"></canvas>
-            </div>
-
-            <div class="flex justify-center gap-4 shrink-0 pb-4">
-                <button id="btn-capture" onclick="captureAndScan()" class="hidden w-16 h-16 rounded-full bg-genshin-gold border-4 border-white shadow-[0_0_15px_#ebd69f] flex items-center justify-center text-genshin-dark transition active:scale-90">
-                    <i class="fa-solid fa-camera text-2xl"></i>
-                </button>
+                <input type="file" id="file-upload" accept="image/*" capture="environment" class="hidden" onchange="handleFileUpload(event)">
+                <label for="file-upload" class="genshin-btn px-6 py-3 cursor-pointer text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-camera text-lg"></i> Buka Kamera / Pilih Foto Struk
+                </label>
             </div>
         </div>
 
-        <!-- MANUAL -->
+        <!-- MANUAL INPUT -->
         <div id="page-manual" class="page-view hidden p-5">
             <h2 class="font-genshin text-genshin-gold text-xl text-center mb-6"><i class="fa-solid fa-pen-nib mr-2"></i>Catatan Manual</h2>
             <div class="genshin-panel p-5">
@@ -195,7 +188,7 @@
             </div>
         </div>
 
-        <!-- INVENTORY -->
+        <!-- INVENTORY KULKAS -->
         <div id="page-inventory" class="page-view hidden p-5 space-y-5">
             <div class="flex justify-between items-center">
                 <h2 class="font-genshin text-genshin-gold text-xl"><i class="fa-solid fa-box-open mr-2"></i>Inventory Kulkas</h2>
@@ -206,7 +199,7 @@
 
             <button onclick="callAIChef()" class="w-full genshin-panel p-4 flex items-center justify-center gap-3 hover:bg-genshin-gold/10 transition border-genshin-gold/80 shadow-[0_0_15px_rgba(235,214,159,0.2)] group cursor-pointer">
                 <div class="w-10 h-10 rounded-full bg-genshin-gold flex items-center justify-center text-genshin-dark group-hover:rotate-12 transition">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
                 </div>
                 <div class="text-left">
                     <h3 class="font-genshin text-genshin-gold font-bold">Xiangling's AI Chef</h3>
@@ -231,22 +224,38 @@
             </div>
         </div>
 
-        <!-- SETTINGS -->
+        <!-- SETTINGS & PROFILE -->
         <div id="page-settings" class="page-view hidden p-5 space-y-5">
-            <h2 class="font-genshin text-genshin-gold text-xl text-center mb-6"><i class="fa-solid fa-gear mr-2"></i>Pengaturan</h2>
-            <div class="genshin-panel p-5 space-y-6">
+            <h2 class="font-genshin text-genshin-gold text-xl text-center mb-4"><i class="fa-solid fa-gear mr-2"></i>Pengaturan Profile</h2>
+            
+            <div class="genshin-panel p-5 space-y-5">
+                <!-- FITUR PROFILE PICTURE -->
+                <div class="text-center pb-4 border-b border-genshin-border/30">
+                    <label class="block text-xs font-genshin text-genshin-gold mb-3"><i class="fa-solid fa-image mr-1"></i> Foto Profil / Avatar</label>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-20 h-20 rounded-full border-2 border-genshin-gold overflow-hidden bg-black/50 flex items-center justify-center shadow-[0_0_15px_#ebd69f] relative">
+                            <img id="settings-avatar-preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                            <i id="settings-avatar-placeholder" class="fa-solid fa-user text-genshin-gold text-3xl"></i>
+                        </div>
+                        <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                        <label for="avatar-input" class="px-4 py-2 bg-genshin-dark border border-genshin-border text-genshin-gold rounded-full text-xs cursor-pointer hover:bg-genshin-gold/10 transition">
+                            <i class="fa-solid fa-upload mr-1"></i> Ganti Foto Profil
+                        </label>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-wallet mr-1"></i> Target Budget Bulanan</label>
                     <input type="number" id="setting-budget" class="w-full genshin-input p-3" value="5500000">
                 </div>
+                
                 <div>
                     <label class="block text-xs font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-key mr-1"></i> Gemini API Key</label>
                     <input type="password" id="setting-apikey" class="w-full genshin-input p-3">
+                    <p class="text-[10px] text-genshin-light/50 mt-1">Kunci dari Google AI Studio tersimpan otomatis di browser.</p>
                 </div>
-                <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan Konfigurasi</button>
-                <button onclick="resetAppMemory()" class="w-full bg-red-900/50 border border-red-500 text-red-200 rounded-full py-2 text-xs font-genshin mt-2">
-                    <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset Data Lokal Cache
-                </button>
+
+                <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan Perubahan</button>
             </div>
         </div>
     </main>
@@ -279,9 +288,6 @@
             <div class="nav-indicator"></div>
         </button>
     </nav>
-    <button onclick="navigate('settings')" class="fixed top-12 right-6 w-8 h-8 flex items-center justify-center text-genshin-gold/70 hover:text-genshin-gold z-50">
-        <i class="fa-solid fa-gear text-xl drop-shadow-md"></i>
-    </button>
 
     <!-- Modals -->
     <div id="loading-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center text-center px-6">
@@ -346,11 +352,12 @@
     </div>
 
     <script>
-        const VALID_KEY = 'AQ.Ab8RN6K_pbzcO8uTre3YT-ZC-cbIcqfJMM9_TSUYFBE_kxdW2w';
+        const DEFAULT_KEY = 'AQ.Ab8RN6K_pbzcO8uTre3YT-ZC-cbIcqfJMM9_TSUYFBE_kxdW2w';
 
         const state = {
             budget: 5500000,
-            apiKey: VALID_KEY, 
+            apiKey: DEFAULT_KEY,
+            profilePic: '',
             expenses: [],
             inventory: [],
             schedule: [],
@@ -380,12 +387,6 @@
         window.closeModals = UI.closeAllModals;
 
         window.navigate = (pageId) => {
-            if (pageId !== 'camera' && window.localStream) {
-                window.localStream.getTracks().forEach(track => track.stop());
-                document.getElementById('camera-feed').classList.add('hidden');
-                document.getElementById('camera-placeholder').classList.remove('hidden');
-                document.getElementById('btn-capture').classList.add('hidden');
-            }
             document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
             document.getElementById(`page-${pageId}`).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -396,16 +397,18 @@
         };
 
         function saveData() {
-            localStorage.setItem('paimon_data_v3', JSON.stringify(state));
+            localStorage.setItem('paimon_gsites_data_v4', JSON.stringify(state));
             updateDashboard();
             renderInventory();
             renderSchedule();
+            renderAvatar();
         }
 
         function initApp() {
-            const data = JSON.parse(localStorage.getItem('paimon_data_v3')) || {};
+            const data = JSON.parse(localStorage.getItem('paimon_gsites_data_v4')) || {};
             state.budget = data.budget || 5500000;
-            state.apiKey = VALID_KEY; 
+            state.apiKey = data.apiKey || DEFAULT_KEY;
+            state.profilePic = data.profilePic || '';
             state.expenses = data.expenses || [];
             state.inventory = data.inventory || [];
             state.schedule = data.schedule || [];
@@ -415,11 +418,33 @@
             saveData();
         }
 
-        window.resetAppMemory = () => {
-            localStorage.clear(); // Bersihkan semua memori cache lokal browser
-            initApp();
-            UI.showToast('Memori Cache Berhasil Dibersihkan!');
+        // Profile Picture Avatar Handler
+        window.handleAvatarUpload = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                state.profilePic = event.target.result;
+                saveData();
+                UI.showToast('Foto Profil Diperbarui!');
+            };
+            reader.readAsDataURL(file);
         };
+
+        function renderAvatar() {
+            const headImg = document.getElementById('header-avatar');
+            const headPh = document.getElementById('header-avatar-placeholder');
+            const setImg = document.getElementById('settings-avatar-preview');
+            const setPh = document.getElementById('settings-avatar-placeholder');
+
+            if(state.profilePic) {
+                headImg.src = state.profilePic; headImg.classList.remove('hidden'); headPh.classList.add('hidden');
+                setImg.src = state.profilePic; setImg.classList.remove('hidden'); setPh.classList.add('hidden');
+            } else {
+                headImg.classList.add('hidden'); headPh.classList.remove('hidden');
+                setImg.classList.add('hidden'); setPh.classList.remove('hidden');
+            }
+        }
 
         function updateDashboard() {
             document.getElementById('dash-budget').textContent = UI.formatIDR(state.budget);
@@ -448,7 +473,7 @@
 
         window.saveSettings = () => {
             state.budget = parseInt(document.getElementById('setting-budget').value) || 5500000;
-            state.apiKey = document.getElementById('setting-apikey').value.trim() || VALID_KEY;
+            state.apiKey = document.getElementById('setting-apikey').value.trim() || DEFAULT_KEY;
             saveData();
             UI.showToast('Pengaturan Tersimpan!');
         };
@@ -467,21 +492,6 @@
             navigate('dashboard');
         };
 
-        // Camera Logic
-        window.startCamera = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }});
-                const video = document.getElementById('camera-feed');
-                video.srcObject = stream;
-                window.localStream = stream;
-                video.classList.remove('hidden');
-                document.getElementById('camera-placeholder').classList.add('hidden');
-                document.getElementById('btn-capture').classList.remove('hidden');
-            } catch(err) {
-                UI.showToast('Akses kamera ditolak.', 'error');
-            }
-        };
-
         window.handleFileUpload = (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -490,34 +500,28 @@
             reader.readAsDataURL(file);
         };
 
-        window.captureAndScan = () => {
-            const video = document.getElementById('camera-feed');
-            const canvas = document.getElementById('camera-canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            processReceipt(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
-        };
-
-        // SYSTEM AUTO-FALLBACK: Coba berbagai versi API Google
+        // ====== UPDATE: MULTI-MODEL FALLBACK KE GENERASI 3 (3.6, 3.5, 3.1) ======
         async function fetchGemini(prompt, base64Image = null, isJson = false) {
-            const keyToUse = state.apiKey || VALID_KEY;
+            const keyToUse = state.apiKey || DEFAULT_KEY;
             
-            // Daftar endpoint yang sering berubah-ubah di server Google
-            const endpoints = [
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${keyToUse}`,
-                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${keyToUse}`,
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${keyToUse}`
+            // Urutan target model disesuaikan dengan versi yang tertera di screenshot 
+            const models = [
+                'gemini-3.6-flash', 
+                'gemini-3.5-flash-lite', 
+                'gemini-3.5-flash', 
+                'gemini-3.1-pro',
+                'gemini-pro',
+                'gemini-flash'
             ];
-
+            
             let lastErr = "";
             const payload = { contents: [{ parts: [{text: prompt}] }] };
             if(base64Image) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Image } });
             if(isJson) payload.generationConfig = { responseMimeType: "application/json" };
 
-            // Coba panggil server satu per satu sampai ada yang cocok
-            for (const url of endpoints) {
+            for (const model of models) {
                 try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keyToUse}`;
                     const response = await fetch(url, { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
@@ -525,28 +529,24 @@
                     });
                     
                     const result = await response.json();
-                    
-                    if(response.ok && result.candidates) {
-                        return result.candidates[0].content.parts[0].text; // BERHASIL!
-                    } else {
-                        lastErr = result.error?.message || `Error ${response.status}`;
-                        console.warn("Mencoba jalur server lain karena:", lastErr);
-                        continue; 
+                    if(response.ok && result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                        return result.candidates[0].content.parts[0].text; 
+                    } else if (result.error) {
+                        lastErr = result.error.message || `Error ${response.status} pada ${model}`;
                     }
                 } catch(e) {
                     lastErr = e.message;
                 }
             }
-            throw new Error(lastErr || "Semua koneksi ditolak server AI.");
+            throw new Error(lastErr || "Koneksi AI gagal.");
         }
 
         async function processReceipt(base64) {
             UI.showLoading("Membaca struk...");
             try {
-                const jsonStr = await fetchGemini(`Analisa foto struk ini. Ekstrak total harga akhir (angka saja) dan daftar barang (nama dan kuantitas). Format JSON: {"total": 50000, "items": [{"name": "Minyak", "qty": "1"}]}`, base64, true);
+                const rawRes = await fetchGemini(`Analisa foto struk ini. Ekstrak total harga akhir (angka saja) dan daftar barang (nama dan kuantitas). Format JSON: {"total": 50000, "items": [{"name": "Minyak", "qty": "1"}]}`, base64, true);
                 
-                // Regex pembersih markdown (jika AI membandel)
-                const cleanJson = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
+                const cleanJson = rawRes.replace(/```json/g, '').replace(/```/g, '').trim();
                 const data = JSON.parse(cleanJson);
                 
                 document.getElementById('scan-total').value = data.total || 0;
@@ -559,7 +559,7 @@
                 document.getElementById('scan-review-modal').classList.remove('hidden');
             } catch(e) {
                 UI.hideLoading();
-                UI.showToast(`[Error Server]: ${e.message}`, "error");
+                UI.showToast(`[Respon AI]: ${e.message}`, "error");
             }
         }
 
@@ -576,7 +576,6 @@
             navigate('dashboard');
         };
 
-        // Inventory
         window.openInventoryModal = () => document.getElementById('inventory-add-modal').classList.remove('hidden');
         window.saveInventoryManual = (e) => {
             e.preventDefault();
@@ -599,7 +598,6 @@
             `).join('');
         }
 
-        // AI Chef
         window.callAIChef = async () => {
             const invStr = state.inventory.map(i => `- ${i.name} (${i.qty})`).join('\n');
             UI.showLoading("Memikirkan resep...");
@@ -610,11 +608,10 @@
                 document.getElementById('ai-modal').classList.remove('hidden');
             } catch(e) { 
                 UI.hideLoading(); 
-                UI.showToast(`[Error Server]: ${e.message}`, "error"); 
+                UI.showToast(`[Respon AI]: ${e.message}`, "error"); 
             }
         };
 
-        // Schedule
         window.addScheduleTask = (e) => {
             e.preventDefault();
             const input = document.getElementById('task-input');
