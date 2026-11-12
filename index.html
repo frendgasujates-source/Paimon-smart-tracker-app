@@ -78,8 +78,8 @@ tailwind.config = { theme: { extend: {
   .vinyl.playing { animation-play-state:running; }
   .vinyl::after { content:''; position:absolute; inset:39%; border-radius:50%;
     background:radial-gradient(circle,var(--acc),var(--acc2)); box-shadow:0 0 12px rgba(0,0,0,.7); }
-  .tonearm { position:absolute; top:12px; right:-10px; width:75px; height:6px; background:linear-gradient(90deg,#cfb986,#8a7a58);
-    border-radius:3px; transform-origin:calc(100% - 4px) center; transform:rotate(-45deg); transition:transform .7s ease-in-out; z-index:10; box-shadow:1px 2px 4px rgba(0,0,0,0.5); }
+  .tonearm { position:absolute; top:2px; right:-20px; width:80px; height:6px; background:linear-gradient(90deg,#cfb986,#8a7a58);
+    border-radius:3px; transform-origin:calc(100% - 4px) center; transform:rotate(-35deg); transition:transform .7s ease-in-out; z-index:10; box-shadow:1px 2px 4px rgba(0,0,0,0.5); }
   .tonearm::before { content:''; position:absolute; left:-2px; top:-2px; width:8px; height:10px; background:#cfb986; border-radius:2px; }
   .tonearm.on { transform:rotate(18deg); }
   .eq { display:flex; gap:2px; align-items:flex-end; height:14px; }
@@ -360,14 +360,21 @@ tailwind.config = { theme: { extend: {
   <button onclick="navigate('schedule')" class="nav-item flex flex-col items-center p-2 relative w-14"><i class="fa-solid fa-list-check text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Jadwal</span><div class="nav-indicator"></div></button>
 </nav>
 
-<div id="mini-player" class="absolute bottom-[72px] left-2 z-30 hidden scale-90 origin-bottom-left shadow-lg opacity-75 hover:opacity-100 transition-opacity">
-  <button onclick="openMusic()" class="genshin-panel flex items-center gap-2 p-1.5 pr-3 rounded-full border border-genshin-gold/40">
-    <div class="mini-disc" id="mini-disc" style="width:32px; height:32px; border-width:1px;"></div>
-    <div class="text-left max-w-[100px]">
-      <p class="text-[9px] font-genshin text-genshin-gold truncate leading-tight" id="mini-title">—</p>
-      <div class="eq mt-0.5" id="mini-eq" style="height:10px;"><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
-  </button>
+<div id="mini-player" class="absolute bottom-[72px] left-2 z-30 hidden scale-90 origin-bottom-left shadow-lg transition-opacity">
+  <div class="genshin-panel flex items-center gap-2 p-1.5 pr-3 rounded-full border border-genshin-gold/40 relative">
+    <!-- Tombol Minimize Mini Player -->
+    <button onclick="hideMiniPlayer()" class="absolute -top-2 -right-2 w-5 h-5 bg-genshin-dark border border-genshin-gold text-genshin-gold rounded-full flex items-center justify-center z-40 shadow-md">
+      <i class="fa-solid fa-xmark text-[10px]"></i>
+    </button>
+    
+    <button onclick="openMusic()" class="flex items-center gap-2 text-left">
+      <div class="mini-disc" id="mini-disc" style="width:32px; height:32px; border-width:1px;"></div>
+      <div class="max-w-[100px]">
+        <p class="text-[9px] font-genshin text-genshin-gold truncate leading-tight" id="mini-title">—</p>
+        <div class="eq mt-0.5" id="mini-eq" style="height:10px;"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </button>
+  </div>
 </div>
 
 <div class="persona-bubble" id="persona-bubble">
@@ -584,6 +591,8 @@ const state = {
   ambient: { rain: 0, fire: 0, wind: 0 }, achievements: [], flags: {},
   focusDone: 0, quoteDate: ''
 };
+
+let miniPlayerHiddenByUser = false;
 
 const saveData = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch (e) { UI.showToast('Penyimpanan penuh, ekspor lalu hapus lagu/foto', 'error'); } renderAll(); checkAchievements(); };
@@ -904,8 +913,9 @@ const idbDel = async (k) => { const db = await idb(); return new Promise((res) =
 let currentUrl = null;
 const currentTrack = () => state.tracks.find(t => t.id === state.music.lastId) || null;
 
-window.openMusic = () => { renderPlaylist(); openModal('music-modal'); updatePlayerUI(); };
+window.openMusic = () => { miniPlayerHiddenByUser = false; renderPlaylist(); openModal('music-modal'); updatePlayerUI(); };
 window.closeMusic = () => UI.closeAllModals();
+window.hideMiniPlayer = () => { miniPlayerHiddenByUser = true; document.getElementById('mini-player').classList.add('hidden'); };
 
 window.togglePlay = () => {
   if (!state.tracks.length) return UI.showToast('Tambah lagu dulu', 'error');
@@ -963,7 +973,13 @@ function updatePlayerUI() {
   document.getElementById('np-title').textContent = t ? t.name : 'Belum ada lagu';
   document.getElementById('np-artist').textContent = t ? (t.source === 'idb' ? 'dari file HP' : 'dari URL') : 'Tambahkan lagu favoritmu';
   document.getElementById('mini-title').textContent = t ? t.name : '—';
-  document.getElementById('mini-player').classList.toggle('hidden', !state.tracks.length);
+  
+  if (state.tracks.length > 0 && !miniPlayerHiddenByUser) {
+    document.getElementById('mini-player').classList.remove('hidden');
+  } else {
+    document.getElementById('mini-player').classList.add('hidden');
+  }
+  
   document.getElementById('mini-disc').classList.toggle('playing', !!playing);
   document.getElementById('mute-btn').innerHTML = `<i class="fa-solid fa-volume-${state.music.muted?'xmark':'high'}"></i>`;
   document.getElementById('shuffle-btn').className = state.music.shuffle ? 'text-genshin-gold' : 'text-genshin-light/50';
@@ -1170,7 +1186,9 @@ async function personaReact(ctx) {
 /* ===== AI ===== */
 async function callAI(prompt, base64 = null, asJson = false) {
   const key = state.apiKey || DEFAULT_KEY;
-  const chain = [...new Set([state.model,'gemini-2.5-flash','gemini-2.5-flash-lite','gemini-2.0-flash'].filter(Boolean))];
+  // Gunakan model utama dari state, dan jika tidak tersedia gunakan fallback
+  const mainModel = state.model || 'gemini-2.5-flash';
+  const chain = [...new Set([mainModel, 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'].filter(Boolean))];
   const payload = { contents: [{ parts: [{ text: prompt }] }] };
   if (base64) payload.contents[0].parts.push({ inlineData: { mimeType:'image/jpeg', data: base64 } });
   if (asJson) payload.generationConfig = { responseMimeType:'application/json' };
