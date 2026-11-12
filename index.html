@@ -78,9 +78,10 @@ tailwind.config = { theme: { extend: {
   .vinyl.playing { animation-play-state:running; }
   .vinyl::after { content:''; position:absolute; inset:39%; border-radius:50%;
     background:radial-gradient(circle,var(--acc),var(--acc2)); box-shadow:0 0 12px rgba(0,0,0,.7); }
-  .tonearm { position:absolute; top:-6px; right:-14px; width:74px; height:5px; background:linear-gradient(90deg,#cfb986,#8a7a58);
-    border-radius:3px; transform-origin:right center; transform:rotate(32deg); transition:transform .7s; }
-  .tonearm.on { transform:rotate(12deg); }
+  .tonearm { position:absolute; top:12px; right:-10px; width:75px; height:6px; background:linear-gradient(90deg,#cfb986,#8a7a58);
+    border-radius:3px; transform-origin:calc(100% - 4px) center; transform:rotate(-45deg); transition:transform .7s ease-in-out; z-index:10; box-shadow:1px 2px 4px rgba(0,0,0,0.5); }
+  .tonearm::before { content:''; position:absolute; left:-2px; top:-2px; width:8px; height:10px; background:#cfb986; border-radius:2px; }
+  .tonearm.on { transform:rotate(18deg); }
   .eq { display:flex; gap:2px; align-items:flex-end; height:14px; }
   .eq span { width:3px; background:var(--acc); border-radius:1px; height:20%; animation:eqb .8s ease-in-out infinite; }
   .eq span:nth-child(2){ animation-delay:.15s } .eq span:nth-child(3){ animation-delay:.3s }
@@ -147,7 +148,9 @@ tailwind.config = { theme: { extend: {
         <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30"><p class="text-[9px] text-green-300">Sisa</p><p class="font-bold text-green-100 text-[11px] money" id="dash-remaining">Rp 0</p></div>
       </div>
       <div class="mt-3 h-2 w-full bg-black/50 rounded-full overflow-hidden"><div id="budget-progress" class="h-full w-0 transition-all duration-500"></div></div>
-      <p class="text-[10px] text-genshin-gold/60 mt-2 money" id="budget-caption"></p>
+      <button onclick="openBudgetModal()" class="text-[10px] text-genshin-gold/70 mt-2 money underline decoration-dotted">
+        <span id="budget-caption"></span> <i class="fa-solid fa-pen ml-1"></i>
+      </button>
     </div>
 
     <div class="grid grid-cols-3 gap-2">
@@ -357,12 +360,12 @@ tailwind.config = { theme: { extend: {
   <button onclick="navigate('schedule')" class="nav-item flex flex-col items-center p-2 relative w-14"><i class="fa-solid fa-list-check text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Jadwal</span><div class="nav-indicator"></div></button>
 </nav>
 
-<div id="mini-player" class="absolute bottom-20 left-3 z-30 hidden">
-  <button onclick="openMusic()" class="genshin-panel flex items-center gap-2 p-2 pr-3 rounded-full">
-    <div class="mini-disc" id="mini-disc"></div>
-    <div class="text-left max-w-[120px]">
-      <p class="text-[10px] font-genshin text-genshin-gold truncate" id="mini-title">—</p>
-      <div class="eq" id="mini-eq"><span></span><span></span><span></span><span></span><span></span></div>
+<div id="mini-player" class="absolute bottom-[72px] left-2 z-30 hidden scale-90 origin-bottom-left shadow-lg opacity-75 hover:opacity-100 transition-opacity">
+  <button onclick="openMusic()" class="genshin-panel flex items-center gap-2 p-1.5 pr-3 rounded-full border border-genshin-gold/40">
+    <div class="mini-disc" id="mini-disc" style="width:32px; height:32px; border-width:1px;"></div>
+    <div class="text-left max-w-[100px]">
+      <p class="text-[9px] font-genshin text-genshin-gold truncate leading-tight" id="mini-title">—</p>
+      <div class="eq mt-0.5" id="mini-eq" style="height:10px;"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
   </button>
 </div>
@@ -719,6 +722,7 @@ function renderDashboard() {
   renderQuote(); renderEnvelopes(m); renderSubs(); renderInsights(m); renderInflation(); renderGoals(); renderChips(); renderExpenseList(m); renderStorageInfo();
 }
 function computeStreak() {
+  if (!state.expenses.length) return 0;
   let n = 0; const d = new Date();
   for (let i = 0; i < 90; i++) {
     const iso = new Date(d.getTime() - d.getTimezoneOffset()*60000 - i*86400000).toISOString().slice(0,10);
@@ -1471,14 +1475,18 @@ window.stopQR = () => { if (qrStream) { qrStream.getTracks().forEach(t => t.stop
 /* ===== settings ===== */
 window.saveSettings = () => {
   const b = parseInt(document.getElementById('setting-budget').value,10);
-  state.settings.defaultBudget = isNaN(b) ? 0 : Math.max(b,0);
+  const nb = isNaN(b) ? 0 : Math.max(b,0);
+  const berubah = nb !== state.settings.defaultBudget;
+  state.settings.defaultBudget = nb;
+  if (berubah) state.budgets[state.view.month] = nb;
   state.apiKey = document.getElementById('setting-apikey').value.trim();
   state.model = document.getElementById('setting-model').value.trim() || 'gemini-2.5-flash';
   state.persona = document.getElementById('setting-persona').value;
   state.sfx = document.getElementById('setting-sfx').checked;
   const cats = document.getElementById('setting-cats').value.split(',').map(c => c.trim()).filter(Boolean);
   if (cats.length) state.categories = [...new Set(cats)];
-  saveData(); UI.showToast('Tersimpan');
+  saveData();
+  UI.showToast(berubah ? 'Budget diperbarui untuk bulan ini' : 'Tersimpan');
 };
 window.exportData = () => { const blob = new Blob([JSON.stringify(state,null,2)], { type:'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
@@ -1540,4 +1548,4 @@ function init() {
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
-                                     </html>
+</html>
