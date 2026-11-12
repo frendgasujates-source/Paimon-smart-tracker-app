@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a1e29">
 <title>Paimon's Pocket - Smart Tracker</title>
-<link rel="manifest" href='data:application/manifest+json,{"name":"Paimon Pocket","short_name":"Paimon","start_url":"./","display":"standalone","background_color":"%231a1e29","theme_color":"%231a1e29","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 fill=%27%231a1e29%27/%3E%3Ctext x=%2796%27 y=%27130%27 font-size=%27110%27 text-anchor=%27middle%27 fill=%27%23ebd69f%27%3E%E2%9C%A6%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<link rel="manifest" href="manifest.json">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,60 +16,91 @@
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
 <script>
-tailwind.config = {
-  theme: { extend: {
-    fontFamily: { 'genshin':['Cinzel','serif'], 'body':['Nunito','sans-serif'] },
-    colors: { genshin: { gold:'#ebd69f', dark:'#242b3b', panel:'rgba(36,43,59,0.92)',
-      light:'#ece5d8', border:'#cfb986', danger:'#e0786f', ok:'#7fbf8e' } }
-  } }
-}
+tailwind.config = { theme: { extend: {
+  fontFamily: { 'genshin':['Cinzel','serif'], 'body':['Nunito','sans-serif'] },
+  colors: { genshin: { gold:'#ebd69f', dark:'#242b3b', panel:'rgba(36,43,59,0.92)',
+    light:'#ece5d8', border:'#cfb986', danger:'#e0786f', ok:'#7fbf8e' } }
+} } }
 </script>
 <style>
-  body { font-family:'Nunito',sans-serif; color:#ece5d8; background-color:#1a1e29;
-    background-image:radial-gradient(circle at 50% 0%, #2a3449 0%, #11141d 100%);
-    background-attachment:fixed; background-size:cover; overflow:hidden; }
+  :root { --acc:#ebd69f; --acc2:#c4a773; --bg1:#2a3449; --bg2:#11141d; }
+  body { font-family:'Nunito',sans-serif; color:#ece5d8; background-color:#11141d;
+    background-image:radial-gradient(circle at 50% 0%, var(--bg1) 0%, var(--bg2) 100%);
+    background-attachment:fixed; background-size:cover; overflow:hidden; transition:background-image .8s; }
   h1,h2,h3,.font-genshin { font-family:'Cinzel',serif; letter-spacing:.05em; }
-  .genshin-panel { background:rgba(36,43,59,.92); border:2px solid #cfb986; border-radius:12px;
+  .genshin-panel { background:rgba(30,36,50,.92); border:2px solid var(--acc); border-radius:12px;
     box-shadow:0 4px 15px rgba(0,0,0,.5), inset 0 0 20px rgba(235,214,159,.05);
     backdrop-filter:blur(8px); position:relative; }
   .genshin-panel::before,.genshin-panel::after { content:''; position:absolute; width:10px; height:10px;
-    border:2px solid #ebd69f; border-radius:50%; }
+    border:2px solid var(--acc); border-radius:50%; }
   .genshin-panel::before { top:-6px; left:-6px; background:#242b3b; }
   .genshin-panel::after { bottom:-6px; right:-6px; background:#242b3b; }
   .genshin-input { background:rgba(17,20,29,.85); border:1px solid #756a52; color:#ece5d8;
     border-radius:6px; transition:all .25s; width:100%; }
-  .genshin-input:focus { border-color:#ebd69f; box-shadow:0 0 8px rgba(235,214,159,.3); outline:none; }
-  .genshin-btn { background:linear-gradient(135deg,#e3cba0,#c4a773); color:#1a1e29;
-    font-family:'Cinzel',serif; font-weight:700; border-radius:999px; border:2px solid #fff3d4;
+  .genshin-input:focus { border-color:var(--acc); box-shadow:0 0 8px rgba(235,214,159,.3); outline:none; }
+  .genshin-btn { background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#14171f;
+    font-family:'Cinzel',serif; font-weight:700; border-radius:999px; border:2px solid rgba(255,255,255,.75);
     box-shadow:0 4px 10px rgba(0,0,0,.3); transition:transform .1s; }
   .genshin-btn:active { transform:scale(.95); }
-  .genshin-btn:disabled { opacity:.5; }
   .btn-ghost { background:rgba(17,20,29,.8); border:1px solid #756a52; color:#ece5d8;
     border-radius:999px; font-family:'Cinzel',serif; }
   .nav-item { color:#8c97a8; transition:all .3s; }
-  .nav-item.active { color:#ebd69f; text-shadow:0 0 10px rgba(235,214,159,.5); }
+  .nav-item.active { color:var(--acc); text-shadow:0 0 10px var(--acc); }
   .nav-indicator { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
-    width:5px; height:5px; background:#ebd69f; border-radius:50%; opacity:0; transition:opacity .3s; }
+    width:5px; height:5px; background:var(--acc); border-radius:50%; opacity:0; transition:opacity .3s; }
   .nav-item.active .nav-indicator { opacity:1; }
-  .star-loader { color:#ebd69f; font-size:2rem; animation:spin 2s linear infinite; }
+  .star-loader { color:var(--acc); font-size:2rem; animation:spin 2s linear infinite; }
   @keyframes spin { 100% { transform:rotate(360deg); } }
   .markdown-body { font-size:.95rem; }
-  .markdown-body h1,.markdown-body h2,.markdown-body h3 { font-family:'Cinzel',serif; color:#ebd69f; margin:1em 0 .5em; }
+  .markdown-body h1,.markdown-body h2,.markdown-body h3 { font-family:'Cinzel',serif; color:var(--acc); margin:1em 0 .5em; }
   .markdown-body ul { list-style:disc; padding-left:1.4em; margin-bottom:1em; }
   .markdown-body p { margin-bottom:1em; line-height:1.5; }
   .empty-state { text-align:center; font-size:.8rem; color:rgba(236,229,216,.45); font-style:italic; padding:1.2rem .5rem; }
   body.stealth-mode .money { filter:blur(5px); user-select:none; }
-  .chip { border:1px solid #756a52; background:rgba(17,20,29,.7); border-radius:999px;
-    padding:.35rem .7rem; font-size:.7rem; white-space:nowrap; }
+  .chip { border:1px solid #756a52; background:rgba(17,20,29,.7); border-radius:999px; padding:.35rem .7rem; font-size:.7rem; white-space:nowrap; }
   .persona-bubble { position:absolute; bottom:76px; left:50%; transform:translateX(-50%) translateY(20px);
     opacity:0; transition:all .35s; max-width:88%; z-index:45; pointer-events:none; }
   .persona-bubble.show { opacity:1; transform:translateX(-50%) translateY(0); }
   ::-webkit-scrollbar { width:5px; }
-  ::-webkit-scrollbar-thumb { background:#cfb986; border-radius:4px; }
+  ::-webkit-scrollbar-thumb { background:var(--acc2); border-radius:4px; }
+
+  #bg-fx { position:absolute; inset:0; pointer-events:none; z-index:0; opacity:0; transition:opacity 1.2s; overflow:hidden; }
+  body.music-on #bg-fx { opacity:1; }
+  .bg-glow { position:absolute; inset:-25%; background:radial-gradient(circle at 50% 115%, rgba(235,214,159,.20), transparent 62%);
+    animation:breathe 7s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform:scale(1.18); opacity:.65; } }
+  .note { position:absolute; bottom:60px; color:var(--acc); opacity:0; font-size:14px; animation:floatUp 6s linear infinite; }
+  @keyframes floatUp { 0%{transform:translateY(0) rotate(0);opacity:0} 15%{opacity:.55} 100%{transform:translateY(-260px) rotate(70deg);opacity:0} }
+  .vinyl { width:140px; height:140px; border-radius:50%; position:relative; flex-shrink:0;
+    background:repeating-radial-gradient(circle, #1b1f2a 0 3px, #12161d 3px 6px);
+    border:3px solid var(--acc); box-shadow:0 0 32px rgba(235,214,159,.28), inset 0 0 30px #000;
+    animation:spin 5.5s linear infinite; animation-play-state:paused; }
+  .vinyl.playing { animation-play-state:running; }
+  .vinyl::after { content:''; position:absolute; inset:39%; border-radius:50%;
+    background:radial-gradient(circle,var(--acc),var(--acc2)); box-shadow:0 0 12px rgba(0,0,0,.7); }
+  .tonearm { position:absolute; top:-6px; right:-14px; width:74px; height:5px; background:linear-gradient(90deg,#cfb986,#8a7a58);
+    border-radius:3px; transform-origin:right center; transform:rotate(32deg); transition:transform .7s; }
+  .tonearm.on { transform:rotate(12deg); }
+  .eq { display:flex; gap:2px; align-items:flex-end; height:14px; }
+  .eq span { width:3px; background:var(--acc); border-radius:1px; height:20%; animation:eqb .8s ease-in-out infinite; }
+  .eq span:nth-child(2){ animation-delay:.15s } .eq span:nth-child(3){ animation-delay:.3s }
+  .eq span:nth-child(4){ animation-delay:.45s } .eq span:nth-child(5){ animation-delay:.6s }
+  @keyframes eqb { 0%,100%{height:18%} 50%{height:100%} }
+  .mini-disc { width:44px; height:44px; border-radius:50%; border:2px solid var(--acc); flex-shrink:0;
+    background:repeating-radial-gradient(circle,#1b1f2a 0 2px,#12161d 2px 4px);
+    animation:spin 4s linear infinite; animation-play-state:paused; position:relative; }
+  .mini-disc.playing { animation-play-state:running; }
+  .mini-disc::after { content:''; position:absolute; inset:36%; border-radius:50%; background:var(--acc); }
+  input[type=range] { -webkit-appearance:none; height:4px; border-radius:2px; background:#3a4254; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+    background:var(--acc); box-shadow:0 0 8px rgba(235,214,159,.6); }
+  .text-genshin-gold { color:var(--acc); }
+  .quote-box { border-left:3px solid var(--acc); }
 </style>
 </head>
 <body class="flex flex-col h-screen w-full relative">
 
+<div id="bg-fx"><div class="bg-glow"></div><div id="notes"></div></div>
 <div class="absolute inset-0 pointer-events-none opacity-20 z-0"
      style="background-image:radial-gradient(white 1px, transparent 1px); background-size:30px 30px;"></div>
 
@@ -81,21 +112,20 @@ tailwind.config = {
     </div>
     <div>
       <h1 class="text-base text-genshin-gold font-bold tracking-wider leading-tight">Paimon's Pocket</h1>
-      <div class="text-[10px] text-genshin-gold/60"><i class="fa-solid fa-wifi text-green-400"></i> <span id="persona-name">Paimon</span> · v6</div>
+      <div class="text-[10px] text-genshin-gold/60"><i class="fa-solid fa-location-dot text-green-400"></i> <span id="region-name">Mondstadt</span> · v8</div>
     </div>
   </div>
   <div class="flex items-center gap-1">
-    <button onclick="toggleStealth()" id="stealth-btn" aria-label="Mode samaran" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-eye"></i></button>
-    <button onclick="toggleSound()" id="sound-btn" aria-label="Suara" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-volume-high"></i></button>
-    <button onclick="navigate('settings')" aria-label="Pengaturan" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-gear text-lg"></i></button>
+    <button onclick="openMusic()" aria-label="Musik" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-compact-disc"></i></button>
+    <button onclick="openFocus()" aria-label="Timer" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-hourglass-half"></i></button>
+    <button onclick="toggleStealth()" id="stealth-btn" aria-label="Samaran" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-eye"></i></button>
+    <button onclick="navigate('settings')" aria-label="Pengaturan" class="w-9 h-9 text-genshin-gold/70"><i class="fa-solid fa-gear"></i></button>
   </div>
 </header>
 
 <main class="flex-1 overflow-y-auto pb-28 z-10 relative" id="app-container">
 
-  <!-- DASHBOARD -->
   <div id="page-dashboard" class="page-view p-4 space-y-4">
-
     <div class="flex items-center justify-between">
       <button onclick="shiftMonth(-1)" aria-label="Sebelumnya" class="btn-ghost w-9 h-9"><i class="fa-solid fa-chevron-left text-xs"></i></button>
       <div class="text-center">
@@ -105,120 +135,103 @@ tailwind.config = {
       <button onclick="shiftMonth(1)" aria-label="Berikutnya" class="btn-ghost w-9 h-9"><i class="fa-solid fa-chevron-right text-xs"></i></button>
     </div>
 
-    <!-- JATAH HARIAN -->
+    <div class="genshin-panel p-3 quote-box"><p class="text-[11px] italic text-genshin-light/75" id="quote-text"></p></div>
+
     <div class="genshin-panel p-4 text-center relative overflow-hidden">
       <p class="font-genshin text-[11px] text-genshin-gold/80 uppercase tracking-widest">Jatah Hari Ini</p>
       <h2 class="text-3xl font-bold text-white money" id="daily-allowance">Rp 0</h2>
       <p class="text-[10px] text-genshin-light/60" id="daily-note">—</p>
       <div class="grid grid-cols-3 gap-2 mt-4">
-        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30">
-          <p class="text-[9px] text-red-300">Terpakai</p>
-          <p class="font-bold text-red-100 text-[11px] money" id="dash-spent">Rp 0</p>
-        </div>
-        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30">
-          <p class="text-[9px] text-genshin-ok">Masuk</p>
-          <p class="font-bold text-genshin-ok text-[11px] money" id="dash-income">Rp 0</p>
-        </div>
-        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30">
-          <p class="text-[9px] text-green-300">Sisa</p>
-          <p class="font-bold text-green-100 text-[11px] money" id="dash-remaining">Rp 0</p>
-        </div>
+        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30"><p class="text-[9px] text-red-300">Terpakai</p><p class="font-bold text-red-100 text-[11px] money" id="dash-spent">Rp 0</p></div>
+        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30"><p class="text-[9px] text-genshin-ok">Masuk</p><p class="font-bold text-genshin-ok text-[11px] money" id="dash-income">Rp 0</p></div>
+        <div class="bg-black/30 p-2 rounded-lg border border-genshin-border/30"><p class="text-[9px] text-green-300">Sisa</p><p class="font-bold text-green-100 text-[11px] money" id="dash-remaining">Rp 0</p></div>
       </div>
-      <div class="mt-3 h-2 w-full bg-black/50 rounded-full overflow-hidden">
-        <div id="budget-progress" class="h-full w-0 transition-all duration-500"></div>
-      </div>
+      <div class="mt-3 h-2 w-full bg-black/50 rounded-full overflow-hidden"><div id="budget-progress" class="h-full w-0 transition-all duration-500"></div></div>
       <p class="text-[10px] text-genshin-gold/60 mt-2 money" id="budget-caption"></p>
     </div>
 
-    <!-- STREAK + SIMULATOR -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="genshin-panel p-3 text-center">
-        <p class="text-[9px] font-genshin text-genshin-gold uppercase">Hari Hemat</p>
-        <p class="text-2xl font-bold text-genshin-gold" id="streak-val">0</p>
-        <p class="text-[9px] text-genshin-light/50">berturut-turut</p>
-      </div>
-      <button onclick="openSimulator()" class="genshin-panel p-3 text-center">
-        <i class="fa-solid fa-scale-balanced text-genshin-gold text-lg"></i>
-        <p class="text-[10px] font-genshin text-genshin-gold mt-1">Simulasi Beli</p>
-        <p class="text-[9px] text-genshin-light/50">cek dulu sebelum bayar</p>
-      </button>
+    <div class="grid grid-cols-3 gap-2">
+      <div class="genshin-panel p-2 text-center"><p class="text-[9px] font-genshin text-genshin-gold uppercase">Hemat</p><p class="text-xl font-bold text-genshin-gold" id="streak-val">0</p></div>
+      <button onclick="openSimulator()" class="genshin-panel p-2 text-center"><i class="fa-solid fa-scale-balanced text-genshin-gold"></i><p class="text-[9px] font-genshin text-genshin-gold mt-1">Simulasi</p></button>
+      <button onclick="openWeekly()" class="genshin-panel p-2 text-center"><i class="fa-solid fa-file-image text-genshin-gold"></i><p class="text-[9px] font-genshin text-genshin-gold mt-1">Laporan</p></button>
     </div>
 
-    <!-- AMPLOP -->
     <div class="genshin-panel p-4">
       <div class="flex justify-between items-center border-b border-genshin-border/30 pb-2 mb-3">
-        <h3 class="font-genshin text-genshin-gold text-sm"><i class="fa-solid fa-envelope-open-text mr-2"></i>Amplop Anggaran</h3>
-        <div class="flex gap-2">
-          <button onclick="autoDistribute()" class="text-[10px] text-genshin-gold/70">bagi otomatis</button>
-          <button onclick="openEnvelopeModal()" class="text-genshin-gold" aria-label="Atur"><i class="fa-solid fa-sliders"></i></button>
-        </div>
+        <h3 class="font-genshin text-genshin-gold text-sm"><i class="fa-solid fa-handshake mr-2"></i>Utang &amp; Piutang</h3>
+        <button onclick="navigate('debts')" class="text-[10px] text-genshin-gold/70">semua</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <div class="bg-black/30 p-2 rounded text-center"><p class="text-[9px] text-red-300">Aku berutang</p><p class="text-xs font-bold text-red-200 money" id="debt-out">Rp 0</p></div>
+        <div class="bg-black/30 p-2 rounded text-center"><p class="text-[9px] text-green-300">Orang berutang</p><p class="text-xs font-bold text-green-200 money" id="debt-in">Rp 0</p></div>
+      </div>
+      <div id="debt-mini"></div>
+    </div>
+
+    <div class="genshin-panel p-4">
+      <div class="flex justify-between items-center border-b border-genshin-border/30 pb-2 mb-3">
+        <h3 class="font-genshin text-genshin-gold text-sm"><i class="fa-solid fa-envelope-open-text mr-2"></i>Amplop</h3>
+        <div class="flex gap-2"><button onclick="autoDistribute()" class="text-[10px] text-genshin-gold/70">bagi otomatis</button><button onclick="openEnvelopeModal()" class="text-genshin-gold"><i class="fa-solid fa-sliders"></i></button></div>
       </div>
       <div id="envelope-list" class="space-y-3"></div>
     </div>
 
-    <!-- LANGGANAN -->
     <div class="genshin-panel p-4 hidden" id="subs-panel">
-      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3">
-        <i class="fa-solid fa-repeat mr-2"></i>Langganan Terdeteksi
-      </h3>
+      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-repeat mr-2"></i>Langganan</h3>
       <div id="subs-list" class="space-y-2"></div>
     </div>
 
-    <!-- ANALISA -->
     <div class="genshin-panel p-4">
-      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3">
-        <i class="fa-solid fa-chart-line mr-2"></i>Analisa
-      </h3>
+      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-chart-line mr-2"></i>Analisa</h3>
       <div id="insight-body" class="space-y-2"></div>
     </div>
 
-    <!-- INFLASI PRIBADI -->
     <div class="genshin-panel p-4 hidden" id="inflation-panel">
-      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3">
-        <i class="fa-solid fa-arrow-trend-up mr-2"></i>Harga di Tempatmu
-      </h3>
+      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-arrow-trend-up mr-2"></i>Harga di Tempatmu</h3>
       <div id="inflation-list" class="space-y-2"></div>
     </div>
 
-    <!-- TARGET & DANA -->
     <div class="genshin-panel p-4">
       <div class="flex justify-between items-center border-b border-genshin-border/30 pb-2 mb-3">
         <h3 class="font-genshin text-genshin-gold text-sm"><i class="fa-solid fa-bullseye mr-2"></i>Target &amp; Dana</h3>
-        <button onclick="openGoalModal()" class="text-genshin-gold" aria-label="Tambah"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="openGoalModal()" class="text-genshin-gold"><i class="fa-solid fa-plus"></i></button>
       </div>
       <div id="goal-list" class="space-y-3"></div>
     </div>
 
-    <!-- CHIP CEPAT -->
     <div class="genshin-panel p-4">
-      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3">
-        <i class="fa-solid fa-bolt mr-2"></i>Catat Sekali Tap
-      </h3>
+      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-bolt mr-2"></i>Sekali Tap</h3>
       <div id="chip-list" class="flex flex-wrap gap-2"></div>
     </div>
 
-    <!-- RIWAYAT -->
     <div class="genshin-panel p-4">
-      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3">
-        <i class="fa-solid fa-scroll mr-2"></i>Riwayat
-      </h3>
+      <h3 class="font-genshin text-genshin-gold text-sm border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-scroll mr-2"></i>Riwayat</h3>
       <input type="search" id="search-expense" oninput="renderDashboard()" placeholder="Cari..." class="genshin-input p-2 text-xs mb-2">
       <div id="recent-expenses" class="space-y-2"></div>
     </div>
   </div>
 
-  <!-- CATAT -->
+  <div id="page-debts" class="page-view hidden p-4 space-y-3">
+    <div class="flex justify-between items-center">
+      <h2 class="font-genshin text-genshin-gold text-lg"><i class="fa-solid fa-handshake mr-2"></i>Utang &amp; Piutang</h2>
+      <button onclick="openDebtModal()" class="w-9 h-9 rounded-full border border-genshin-gold text-genshin-gold"><i class="fa-solid fa-plus"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="genshin-panel p-3 text-center"><p class="text-[10px] text-red-300">Aku berutang</p><p class="text-sm font-bold text-red-200 money" id="debt-out2">Rp 0</p></div>
+      <div class="genshin-panel p-3 text-center"><p class="text-[10px] text-green-300">Orang berutang</p><p class="text-sm font-bold text-green-200 money" id="debt-in2">Rp 0</p></div>
+    </div>
+    <div class="genshin-panel p-2"><ul id="debt-list" class="divide-y divide-genshin-border/20"></ul></div>
+  </div>
+
   <div id="page-manual" class="page-view hidden p-4">
     <h2 class="font-genshin text-genshin-gold text-lg text-center mb-4"><i class="fa-solid fa-pen-nib mr-2"></i>Catatan</h2>
-
     <div class="genshin-panel p-4 mb-3">
       <div class="flex gap-2">
         <input type="text" id="nl-input" class="flex-1 genshin-input p-3 text-sm" placeholder="tadi bensin 25rb">
-        <button onclick="startVoice()" id="mic-btn" class="btn-ghost px-3" aria-label="Suara"><i class="fa-solid fa-microphone"></i></button>
+        <button onclick="startVoice()" class="btn-ghost px-3" aria-label="Suara"><i class="fa-solid fa-microphone"></i></button>
         <button onclick="parseNatural()" class="genshin-btn px-4 text-xs">Isi</button>
       </div>
     </div>
-
     <div class="genshin-panel p-4">
       <form id="form-manual" onsubmit="saveManualExpense(event)" class="space-y-3">
         <input type="hidden" id="manual-id">
@@ -233,7 +246,6 @@ tailwind.config = {
         <button type="button" onclick="resetManualForm()" class="w-full btn-ghost py-2 text-xs">Bersihkan</button>
       </form>
     </div>
-
     <div class="genshin-panel p-4 mt-3">
       <h3 class="font-genshin text-genshin-gold text-xs mb-2"><i class="fa-solid fa-arrow-down text-genshin-ok mr-1"></i>Pemasukan</h3>
       <form onsubmit="saveIncome(event)" class="space-y-2">
@@ -247,54 +259,39 @@ tailwind.config = {
     </div>
   </div>
 
-  <!-- KAMERA -->
   <div id="page-camera" class="page-view hidden p-4 space-y-3">
     <h2 class="font-genshin text-genshin-gold text-lg text-center"><i class="fa-solid fa-camera mr-2"></i>Scan Struk</h2>
     <div class="genshin-panel p-6 text-center space-y-3">
       <i class="fa-solid fa-receipt text-5xl text-genshin-gold/50"></i>
       <input type="file" id="file-camera" accept="image/*" capture="environment" class="hidden" onchange="handleFileUpload(event)">
       <input type="file" id="file-gallery" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
-      <label for="file-camera" class="genshin-btn px-5 py-3 text-sm inline-flex items-center gap-2 cursor-pointer">
-        <i class="fa-solid fa-camera"></i> Ambil Foto
-      </label>
-      <label for="file-gallery" class="btn-ghost px-5 py-3 text-sm inline-flex items-center gap-2 cursor-pointer">
-        <i class="fa-solid fa-images"></i> Galeri
-      </label>
-      <p class="text-[10px] text-genshin-light/45">Kalau AI gagal, OCR lokal dipakai sebagai cadangan.</p>
+      <label for="file-camera" class="genshin-btn px-5 py-3 text-sm inline-flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-camera"></i> Ambil Foto</label>
+      <label for="file-gallery" class="btn-ghost px-5 py-3 text-sm inline-flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-images"></i> Galeri</label>
     </div>
   </div>
 
-  <!-- INVENTORY -->
   <div id="page-inventory" class="page-view hidden p-4 space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="font-genshin text-genshin-gold text-lg"><i class="fa-solid fa-box-open mr-2"></i>Kulkas</h2>
-      <button onclick="openInventoryModal()" class="w-9 h-9 rounded-full border border-genshin-gold text-genshin-gold" aria-label="Tambah"><i class="fa-solid fa-plus"></i></button>
+      <button onclick="openInventoryModal()" class="w-9 h-9 rounded-full border border-genshin-gold text-genshin-gold"><i class="fa-solid fa-plus"></i></button>
     </div>
     <button onclick="callAIChef()" class="w-full genshin-panel p-4 flex items-center gap-3">
       <div class="w-10 h-10 rounded-full bg-genshin-gold flex items-center justify-center text-genshin-dark"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-      <div class="text-left">
-        <h3 class="font-genshin text-genshin-gold text-sm">AI Chef</h3>
-        <p class="text-[11px] text-genshin-light/70">Resep dari stok, dibatasi jatah hari ini.</p>
-      </div>
+      <div class="text-left"><h3 class="font-genshin text-genshin-gold text-sm">AI Chef</h3><p class="text-[11px] text-genshin-light/70">Resep dari stok, dibatasi jatah.</p></div>
     </button>
     <div class="genshin-panel p-2"><ul id="inventory-list" class="divide-y divide-genshin-border/20"></ul></div>
   </div>
 
-  <!-- JADWAL -->
   <div id="page-schedule" class="page-view hidden p-4 space-y-3">
     <h2 class="font-genshin text-genshin-gold text-lg text-center"><i class="fa-solid fa-list-check mr-2"></i>Jadwal</h2>
     <form onsubmit="addScheduleTask(event)" class="space-y-2">
       <input type="text" id="task-input" required maxlength="90" class="genshin-input p-3 text-sm" placeholder="Daftar belanja...">
-      <div class="flex gap-2">
-        <input type="datetime-local" id="task-remind" class="flex-1 genshin-input p-2 text-xs">
-        <button type="submit" class="genshin-btn px-5 text-xs">Tambah</button>
-      </div>
+      <div class="flex gap-2"><input type="datetime-local" id="task-remind" class="flex-1 genshin-input p-2 text-xs"><button type="submit" class="genshin-btn px-5 text-xs">Tambah</button></div>
     </form>
     <button onclick="requestNotif()" class="w-full btn-ghost py-2 text-[11px]"><i class="fa-solid fa-bell mr-1"></i> Aktifkan Pengingat</button>
     <div class="genshin-panel p-2"><ul id="schedule-list" class="divide-y divide-genshin-border/20"></ul></div>
   </div>
 
-  <!-- SETTINGS -->
   <div id="page-settings" class="page-view hidden p-4 space-y-4">
     <h2 class="font-genshin text-genshin-gold text-lg text-center"><i class="fa-solid fa-gear mr-2"></i>Pengaturan</h2>
 
@@ -305,43 +302,38 @@ tailwind.config = {
           <i id="settings-avatar-placeholder" class="fa-solid fa-user text-genshin-gold text-2xl"></i>
         </div>
         <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
-        <label for="avatar-input" class="inline-block mt-2 px-4 py-2 border border-genshin-border text-genshin-gold rounded-full text-xs cursor-pointer">
-          <i class="fa-solid fa-upload mr-1"></i> Ganti Foto
-        </label>
+        <label for="avatar-input" class="inline-block mt-2 px-4 py-2 border border-genshin-border text-genshin-gold rounded-full text-xs cursor-pointer"><i class="fa-solid fa-upload mr-1"></i> Ganti Foto</label>
       </div>
-
+      <div>
+        <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-mountain-sun mr-1"></i> Tema Region</label>
+        <select id="setting-theme" class="genshin-input p-3 text-sm" onchange="setTheme(this.value)">
+          <option value="auto">Otomatis ikut jam</option><option value="mondstadt">Mondstadt</option>
+          <option value="liyue">Liyue</option><option value="inazuma">Inazuma</option><option value="sumeru">Sumeru</option>
+        </select>
+      </div>
       <div>
         <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-user-ninja mr-1"></i> Persona</label>
         <select id="setting-persona" class="genshin-input p-3 text-sm">
-          <option value="paimon">Paimon (drama, perhatian)</option>
-          <option value="ningguang">Ningguang (dingin, hitungan)</option>
-          <option value="zhongli">Zhongli (filosofis, boros)</option>
-          <option value="off">Tanpa reaksi</option>
+          <option value="paimon">Paimon</option><option value="ningguang">Ningguang</option>
+          <option value="zhongli">Zhongli</option><option value="off">Tanpa reaksi</option>
         </select>
       </div>
-
-      <div>
-        <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-wallet mr-1"></i> Budget Default</label>
-        <input type="number" id="setting-budget" min="0" class="genshin-input p-3" value="5500000">
-      </div>
-
+      <label class="flex items-center justify-between text-[11px] text-genshin-gold"><span><i class="fa-solid fa-volume-high mr-1"></i> Efek Suara</span>
+        <input type="checkbox" id="setting-sfx" class="w-4 h-4 accent-amber-200"></label>
+      <div><label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-wallet mr-1"></i> Budget Default</label><input type="number" id="setting-budget" min="0" class="genshin-input p-3"></div>
       <div>
         <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-key mr-1"></i> Gemini API Key</label>
         <input type="password" id="setting-apikey" class="genshin-input p-3" placeholder="kosong = key bawaan">
-        <p class="text-[10px] text-genshin-light/50 mt-1">Dipakai untuk scan struk, resep, parser, dan reaksi persona.</p>
+        <p class="text-[10px] text-genshin-light/50 mt-1">Untuk scan struk, resep, parser, dan reaksi persona.</p>
       </div>
-
-      <div>
-        <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-microchip mr-1"></i> Model</label>
-        <input type="text" id="setting-model" class="genshin-input p-3 text-sm" placeholder="gemini-2.5-flash">
-      </div>
-
-      <div>
-        <label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-tags mr-1"></i> Kategori</label>
-        <input type="text" id="setting-cats" class="genshin-input p-3 text-sm">
-      </div>
-
+      <div><label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-microchip mr-1"></i> Model</label><input type="text" id="setting-model" class="genshin-input p-3 text-sm"></div>
+      <div><label class="block text-[11px] font-genshin text-genshin-gold mb-1"><i class="fa-solid fa-tags mr-1"></i> Kategori</label><input type="text" id="setting-cats" class="genshin-input p-3 text-sm"></div>
       <button onclick="saveSettings()" class="w-full genshin-btn py-3">Simpan</button>
+    </div>
+
+    <div class="genshin-panel p-4">
+      <h3 class="font-genshin text-genshin-gold text-xs border-b border-genshin-border/30 pb-2 mb-3"><i class="fa-solid fa-trophy mr-2"></i>Pencapaian</h3>
+      <div id="ach-list" class="space-y-2"></div>
     </div>
 
     <div class="genshin-panel p-4 space-y-2">
@@ -350,7 +342,7 @@ tailwind.config = {
       <button onclick="exportCSV()" class="w-full btn-ghost py-2 text-xs">Ekspor CSV</button>
       <input type="file" id="import-input" accept="application/json,.json" class="hidden" onchange="importData(event)">
       <label for="import-input" class="w-full btn-ghost py-2 text-xs text-center block cursor-pointer">Impor JSON</label>
-      <button onclick="openQR()" class="w-full btn-ghost py-2 text-xs"><i class="fa-solid fa-qrcode mr-1"></i> Transfer via QR</button>
+      <button onclick="openQR()" class="w-full btn-ghost py-2 text-xs"><i class="fa-solid fa-qrcode mr-1"></i> Transfer QR</button>
       <button onclick="askReset()" class="w-full py-2 text-xs text-genshin-danger border border-genshin-danger/50 rounded-full">Hapus Semua</button>
       <p class="text-[10px] text-genshin-light/40 text-center" id="storage-info"></p>
     </div>
@@ -358,43 +350,120 @@ tailwind.config = {
 </main>
 
 <nav class="absolute bottom-0 w-full h-16 bg-genshin-dark/95 border-t border-genshin-border/50 flex justify-around items-center z-40 backdrop-blur-md pb-2">
-  <button onclick="navigate('dashboard')" class="nav-item flex flex-col items-center p-2 relative active w-14">
-    <i class="fa-solid fa-chart-pie text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Mora</span><div class="nav-indicator"></div>
-  </button>
-  <button onclick="navigate('manual')" class="nav-item flex flex-col items-center p-2 relative w-14">
-    <i class="fa-solid fa-pen-nib text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Catat</span><div class="nav-indicator"></div>
-  </button>
-  <button onclick="navigate('camera')" class="nav-item flex flex-col items-center relative -top-5 w-16" aria-label="Scan">
-    <div class="w-14 h-14 rounded-full bg-genshin-gold border-4 border-genshin-dark flex items-center justify-center text-genshin-dark"><i class="fa-solid fa-camera-retro text-2xl"></i></div>
-  </button>
-  <button onclick="navigate('inventory')" class="nav-item flex flex-col items-center p-2 relative w-14">
-    <i class="fa-solid fa-box-open text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Tas</span><div class="nav-indicator"></div>
-  </button>
-  <button onclick="navigate('schedule')" class="nav-item flex flex-col items-center p-2 relative w-14">
-    <i class="fa-solid fa-list-check text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Jadwal</span><div class="nav-indicator"></div>
-  </button>
+  <button onclick="navigate('dashboard')" class="nav-item flex flex-col items-center p-2 relative active w-14"><i class="fa-solid fa-chart-pie text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Mora</span><div class="nav-indicator"></div></button>
+  <button onclick="navigate('manual')" class="nav-item flex flex-col items-center p-2 relative w-14"><i class="fa-solid fa-pen-nib text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Catat</span><div class="nav-indicator"></div></button>
+  <button onclick="navigate('camera')" class="nav-item flex flex-col items-center relative -top-5 w-16" aria-label="Scan"><div class="w-14 h-14 rounded-full bg-genshin-gold border-4 border-genshin-dark flex items-center justify-center text-genshin-dark"><i class="fa-solid fa-camera-retro text-2xl"></i></div></button>
+  <button onclick="navigate('inventory')" class="nav-item flex flex-col items-center p-2 relative w-14"><i class="fa-solid fa-box-open text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Tas</span><div class="nav-indicator"></div></button>
+  <button onclick="navigate('schedule')" class="nav-item flex flex-col items-center p-2 relative w-14"><i class="fa-solid fa-list-check text-xl mb-1"></i><span class="text-[10px] font-genshin uppercase">Jadwal</span><div class="nav-indicator"></div></button>
 </nav>
 
-<div class="persona-bubble" id="persona-bubble">
-  <div class="genshin-panel px-4 py-2 text-xs flex items-start gap-2">
-    <i class="fa-solid fa-comment-dots text-genshin-gold mt-0.5"></i>
-    <span id="persona-text"></span>
-  </div>
+<div id="mini-player" class="absolute bottom-20 left-3 z-30 hidden">
+  <button onclick="openMusic()" class="genshin-panel flex items-center gap-2 p-2 pr-3 rounded-full">
+    <div class="mini-disc" id="mini-disc"></div>
+    <div class="text-left max-w-[120px]">
+      <p class="text-[10px] font-genshin text-genshin-gold truncate" id="mini-title">—</p>
+      <div class="eq" id="mini-eq"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+  </button>
 </div>
 
-<!-- MODALS -->
+<div class="persona-bubble" id="persona-bubble">
+  <div class="genshin-panel px-4 py-2 text-xs flex items-start gap-2"><i class="fa-solid fa-comment-dots text-genshin-gold mt-0.5"></i><span id="persona-text"></span></div>
+</div>
+
 <div id="loading-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center text-center px-6">
   <i class="fa-solid fa-star star-loader mb-4"></i>
   <h3 class="font-genshin text-genshin-gold text-lg mb-2">Memproses Ley Lines...</h3>
   <p id="loading-text" class="text-sm text-genshin-light/80"></p>
 </div>
 
+<div id="music-modal" class="fixed inset-0 bg-black/92 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-3">
+  <div class="genshin-panel w-full max-w-md max-h-[92vh] flex flex-col">
+    <div class="p-3 border-b border-genshin-border/30 flex justify-between items-center shrink-0">
+      <h3 class="font-genshin text-genshin-gold"><i class="fa-solid fa-compact-disc mr-2"></i>Panggung Paimon</h3>
+      <button onclick="closeMusic()" class="p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+    </div>
+    <div class="p-4 overflow-y-auto flex-1">
+      <div class="flex justify-center mb-4"><div class="relative"><div class="vinyl" id="vinyl"></div><div class="tonearm" id="tonearm"></div></div></div>
+      <div class="text-center mb-3">
+        <p class="font-genshin text-genshin-gold text-sm truncate" id="np-title">Belum ada lagu</p>
+        <p class="text-[10px] text-genshin-light/50 truncate" id="np-artist">Tambahkan lagu favoritmu</p>
+      </div>
+      <div class="flex items-center gap-2 text-[10px] text-genshin-light/50 mb-3">
+        <span id="cur-time">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" class="flex-1"><span id="dur-time">0:00</span>
+      </div>
+      <div class="flex justify-center items-center gap-4 mb-4">
+        <button onclick="toggleShuffle()" id="shuffle-btn" class="text-genshin-light/50"><i class="fa-solid fa-shuffle"></i></button>
+        <button onclick="prevTrack()" class="text-genshin-gold text-xl"><i class="fa-solid fa-backward-step"></i></button>
+        <button onclick="togglePlay()" id="play-btn" class="w-14 h-14 rounded-full bg-genshin-gold text-genshin-dark flex items-center justify-center text-xl"><i class="fa-solid fa-play"></i></button>
+        <button onclick="nextTrack()" class="text-genshin-gold text-xl"><i class="fa-solid fa-forward-step"></i></button>
+        <button onclick="cycleRepeat()" id="repeat-btn" class="text-genshin-light/50"><i class="fa-solid fa-repeat"></i></button>
+      </div>
+      <div class="flex items-center gap-2 mb-4">
+        <i class="fa-solid fa-volume-low text-genshin-gold text-xs"></i>
+        <input type="range" id="volume" min="0" max="100" value="60" class="flex-1">
+        <button onclick="toggleMute()" id="mute-btn" class="text-genshin-gold text-xs"><i class="fa-solid fa-volume-high"></i></button>
+      </div>
+      <div class="genshin-panel p-3 mb-3">
+        <h4 class="text-[11px] font-genshin text-genshin-gold mb-2"><i class="fa-solid fa-cloud-rain mr-1"></i>Ambient</h4>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2"><span class="text-[10px] w-14">Hujan</span><input type="range" data-amb="rain" min="0" max="100" value="0" class="flex-1"></div>
+          <div class="flex items-center gap-2"><span class="text-[10px] w-14">Api</span><input type="range" data-amb="fire" min="0" max="100" value="0" class="flex-1"></div>
+          <div class="flex items-center gap-2"><span class="text-[10px] w-14">Angin</span><input type="range" data-amb="wind" min="0" max="100" value="0" class="flex-1"></div>
+        </div>
+      </div>
+      <div class="flex gap-2 mb-3">
+        <input type="text" id="song-url" class="flex-1 genshin-input p-2 text-xs" placeholder="Tempel URL mp3/ogg">
+        <button onclick="addSongUrl()" class="genshin-btn px-3 text-xs">URL</button>
+      </div>
+      <input type="file" id="song-file" accept="audio/*" multiple class="hidden" onchange="addSongFiles(event)">
+      <label for="song-file" class="w-full btn-ghost py-2 text-xs text-center block cursor-pointer mb-3"><i class="fa-solid fa-folder-open mr-1"></i> Tambah dari File</label>
+      <h4 class="text-[11px] font-genshin text-genshin-gold mb-2">Playlist</h4>
+      <div id="playlist" class="space-y-1"></div>
+    </div>
+  </div>
+</div>
+
+<div id="focus-modal" class="fixed inset-0 bg-black/88 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+  <div class="genshin-panel w-full max-w-sm p-6 text-center">
+    <h3 class="font-genshin text-genshin-gold mb-1">Ley Line Fokus</h3>
+    <p class="text-[10px] text-genshin-light/60 mb-4">25 menit tanpa jajan.</p>
+    <p class="text-5xl font-bold text-genshin-gold mb-4" id="focus-time">25:00</p>
+    <div class="flex gap-2">
+      <button onclick="toggleFocus()" id="focus-toggle" class="flex-1 genshin-btn py-3 text-sm">Mulai</button>
+      <button onclick="resetFocus()" class="flex-1 btn-ghost py-3 text-sm">Reset</button>
+    </div>
+    <button onclick="closeModals()" class="w-full mt-3 text-[11px] text-genshin-light/50">Tutup</button>
+  </div>
+</div>
+
+<div id="weekly-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
+  <div class="genshin-panel w-full max-w-sm p-4">
+    <div class="flex justify-between items-center mb-3"><h3 class="font-genshin text-genshin-gold">Laporan Mingguan</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+    <canvas id="weekly-canvas" class="w-full rounded border border-genshin-border/40 mb-3"></canvas>
+    <div class="flex gap-2">
+      <button onclick="closeModals()" class="flex-1 btn-ghost py-2 text-xs">Tutup</button>
+      <button onclick="downloadWeekly()" class="flex-1 genshin-btn py-2 text-xs">Simpan Gambar</button>
+    </div>
+  </div>
+</div>
+
+<div id="debt-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="genshin-panel w-full max-w-sm p-4">
+    <h3 class="font-genshin text-genshin-gold mb-3">Catat Utang</h3>
+    <select id="debt-type" class="genshin-input p-3 mb-2 text-sm">
+      <option value="out">Aku berutang</option><option value="in">Orang berutang padaku</option>
+    </select>
+    <input type="text" id="debt-name" class="genshin-input p-3 mb-2 text-sm" placeholder="Nama orang">
+    <input type="number" id="debt-amount" class="genshin-input p-3 mb-2 text-sm" placeholder="Nominal">
+    <input type="text" id="debt-note" class="genshin-input p-3 mb-3 text-sm" placeholder="Keterangan">
+    <div class="flex gap-2"><button onclick="closeModals()" class="flex-1 btn-ghost py-2 text-xs">Batal</button><button onclick="saveDebt()" class="flex-1 genshin-btn py-2 text-xs">Simpan</button></div>
+  </div>
+</div>
+
 <div id="ai-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
   <div class="genshin-panel w-full max-w-lg max-h-[80vh] flex flex-col">
-    <div class="p-4 border-b border-genshin-border/30 flex justify-between items-center shrink-0">
-      <h3 class="font-genshin text-genshin-gold"><i class="fa-solid fa-utensils mr-2"></i>Resep</h3>
-      <button onclick="closeModals()" class="p-2" aria-label="Tutup"><i class="fa-solid fa-xmark text-xl"></i></button>
-    </div>
+    <div class="p-4 border-b border-genshin-border/30 flex justify-between items-center shrink-0"><h3 class="font-genshin text-genshin-gold"><i class="fa-solid fa-utensils mr-2"></i>Resep</h3><button onclick="closeModals()" class="p-2"><i class="fa-solid fa-xmark text-xl"></i></button></div>
     <div id="ai-modal-content" class="p-5 overflow-y-auto markdown-body flex-1"></div>
   </div>
 </div>
@@ -408,22 +477,16 @@ tailwind.config = {
       <div><label class="block text-[11px] text-genshin-gold mb-1">Tanggal</label><input type="date" id="scan-date" class="genshin-input p-3 text-xs"></div>
       <div><h4 class="text-xs font-genshin text-genshin-gold">Barang</h4><div id="scan-items-container" class="space-y-2 max-h-44 overflow-y-auto p-2 bg-black/30 rounded"></div></div>
     </div>
-    <div class="p-4 border-t border-genshin-border/30 flex gap-2 shrink-0">
-      <button onclick="closeModals()" class="flex-1 btn-ghost py-3 text-sm">Batal</button>
-      <button onclick="confirmScanSave()" class="flex-1 genshin-btn py-3 text-sm">Simpan</button>
-    </div>
+    <div class="p-4 border-t border-genshin-border/30 flex gap-2 shrink-0"><button onclick="closeModals()" class="flex-1 btn-ghost py-3 text-sm">Batal</button><button onclick="confirmScanSave()" class="flex-1 genshin-btn py-3 text-sm">Simpan</button></div>
   </div>
 </div>
 
 <div id="inventory-add-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
   <div class="genshin-panel w-full max-w-sm p-4">
-    <div class="flex justify-between items-center mb-3"><h3 class="font-genshin text-genshin-gold">Tambah Barang</h3><button onclick="closeModals()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="flex justify-between items-center mb-3"><h3 class="font-genshin text-genshin-gold">Tambah Barang</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
     <form onsubmit="saveInventoryManual(event)" class="space-y-2">
       <input type="text" id="inv-name" required maxlength="60" class="genshin-input p-3 text-sm" placeholder="Nama">
-      <div class="grid grid-cols-2 gap-2">
-        <input type="number" id="inv-qty" required min="0.1" step="0.1" class="genshin-input p-3 text-sm" placeholder="Jumlah">
-        <input type="text" id="inv-unit" maxlength="12" class="genshin-input p-3 text-sm" placeholder="satuan">
-      </div>
+      <div class="grid grid-cols-2 gap-2"><input type="number" id="inv-qty" required min="0.1" step="0.1" class="genshin-input p-3 text-sm" placeholder="Jumlah"><input type="text" id="inv-unit" maxlength="12" class="genshin-input p-3 text-sm" placeholder="satuan"></div>
       <input type="number" id="inv-price" min="0" class="genshin-input p-3 text-sm" placeholder="harga total (opsional)">
       <input type="date" id="inv-exp" class="genshin-input p-2 text-xs">
       <button type="submit" class="w-full genshin-btn py-2">Simpan</button>
@@ -441,10 +504,9 @@ tailwind.config = {
 
 <div id="envelope-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
   <div class="genshin-panel w-full max-w-sm p-4 max-h-[80vh] flex flex-col">
-    <div class="flex justify-between items-center mb-3 shrink-0"><h3 class="font-genshin text-genshin-gold">Atur Amplop</h3><button onclick="closeModals()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
-    <p class="text-[10px] text-genshin-light/50 mb-2">Isi 0 untuk kategori tanpa plafon.</p>
+    <div class="flex justify-between items-center mb-3 shrink-0"><h3 class="font-genshin text-genshin-gold">Atur Amplop</h3><button onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
     <div id="envelope-form" class="space-y-2 overflow-y-auto flex-1"></div>
-    <button onclick="saveEnvelopes()" class="w-full genshin-btn py-2 mt-3 shrink-0">Simpan Amplop</button>
+    <button onclick="saveEnvelopes()" class="w-full genshin-btn py-2 mt-3 shrink-0">Simpan</button>
   </div>
 </div>
 
@@ -453,14 +515,14 @@ tailwind.config = {
     <h3 class="font-genshin text-genshin-gold mb-3">Target / Dana</h3>
     <input type="text" id="goal-name" class="genshin-input p-3 mb-2 text-sm" placeholder="Nama">
     <input type="number" id="goal-target" class="genshin-input p-3 mb-2 text-sm" placeholder="Nominal">
-    <input type="number" id="goal-monthly" class="genshin-input p-3 mb-3 text-sm" placeholder="sisihkan per bulan (opsional)">
+    <input type="number" id="goal-monthly" class="genshin-input p-3 mb-3 text-sm" placeholder="per bulan (opsional)">
     <div class="flex gap-2"><button onclick="closeModals()" class="flex-1 btn-ghost py-2 text-xs">Batal</button><button onclick="saveGoal()" class="flex-1 genshin-btn py-2 text-xs">Simpan</button></div>
   </div>
 </div>
 
 <div id="sim-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
   <div class="genshin-panel w-full max-w-sm p-5 text-center">
-    <h3 class="font-genshin text-genshin-gold mb-3">Simulasi Pembelian</h3>
+    <h3 class="font-genshin text-genshin-gold mb-3">Simulasi</h3>
     <input type="number" id="sim-input" min="0" class="genshin-input p-3 mb-3 text-center text-lg" placeholder="Harga barang">
     <div id="sim-result" class="text-sm mb-3 min-h-[52px]"></div>
     <div class="flex gap-2"><button onclick="closeModals()" class="flex-1 btn-ghost py-2 text-xs">Tutup</button><button onclick="simCommit()" class="flex-1 genshin-btn py-2 text-xs">Catat</button></div>
@@ -469,23 +531,14 @@ tailwind.config = {
 
 <div id="qr-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex-col items-center justify-center p-4">
   <div class="genshin-panel w-full max-w-sm p-4 text-center">
-    <div class="flex justify-between items-center mb-3"><h3 class="font-genshin text-genshin-gold">Transfer QR</h3><button onclick="stopQR();closeModals()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="flex gap-2 mb-3">
-      <button onclick="qrMode('show')" class="flex-1 btn-ghost py-2 text-xs" id="qr-show-btn">Tampilkan</button>
-      <button onclick="qrMode('scan')" class="flex-1 btn-ghost py-2 text-xs">Scan</button>
-    </div>
+    <div class="flex justify-between items-center mb-3"><h3 class="font-genshin text-genshin-gold">Transfer QR</h3><button onclick="stopQR();closeModals()"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="flex gap-2 mb-3"><button onclick="qrMode('show')" class="flex-1 btn-ghost py-2 text-xs">Tampilkan</button><button onclick="qrMode('scan')" class="flex-1 btn-ghost py-2 text-xs">Scan</button></div>
     <div id="qr-show-area" class="space-y-2">
       <div id="qr-canvas" class="bg-white p-2 rounded inline-block"></div>
       <p class="text-[11px] text-genshin-gold" id="qr-progress"></p>
-      <div class="flex gap-2">
-        <button onclick="qrPage(-1)" class="flex-1 btn-ghost py-2 text-xs">Sebelum</button>
-        <button onclick="qrPage(1)" class="flex-1 genshin-btn py-2 text-xs">Lanjut</button>
-      </div>
+      <div class="flex gap-2"><button onclick="qrPage(-1)" class="flex-1 btn-ghost py-2 text-xs">Sebelum</button><button onclick="qrPage(1)" class="flex-1 genshin-btn py-2 text-xs">Lanjut</button></div>
     </div>
-    <div id="qr-scan-area" class="hidden">
-      <video id="qr-video" class="w-full rounded" playsinline muted></video>
-      <p class="text-[11px] text-genshin-gold mt-2" id="qr-scan-status">Arahkan ke QR...</p>
-    </div>
+    <div id="qr-scan-area" class="hidden"><video id="qr-video" class="w-full rounded" playsinline muted></video><p class="text-[11px] text-genshin-gold mt-2" id="qr-scan-status">Arahkan ke QR...</p></div>
   </div>
 </div>
 
@@ -497,81 +550,66 @@ tailwind.config = {
   </div>
 </div>
 
+<audio id="player-audio" preload="metadata"></audio>
+
 <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 -translate-y-24 opacity-0 transition-all duration-300 z-50 bg-genshin-panel border border-genshin-gold px-6 py-3 rounded-full shadow-lg flex items-center gap-3 pointer-events-none">
   <i id="toast-icon" class="fa-solid fa-check text-green-400"></i><span id="toast-msg" class="text-sm">Tersimpan</span>
 </div>
 
 <script>
-/* ============ Paimon's Pocket v6 ============ */
+/* ===== Paimon's Pocket v8 ===== */
 const DEFAULT_KEY = 'AQ.Ab8RN6K_pbzcO8uTre3YT-ZC-cbIcqfJMM9_TSUYFBE_kxdW2w';
-const STORAGE_KEY = 'paimon_pocket_v6';
-const LEGACY_KEY  = 'paimon_pocket_v5';
+const STORAGE_KEY = 'paimon_pocket_v8';
+const LEGACY_KEY  = 'paimon_pocket_v7';
 const DEFAULT_CATS = ['Makanan Luar','Bahan Masak','Transportasi','Tagihan','Kesehatan','Hiburan','Lainnya'];
 
 const todayISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 const monthOf = (iso) => (iso || todayISO()).slice(0,7);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-function shiftMonthKey(k, d) { const [y,m] = k.split('-').map(Number); const dt = new Date(y, m-1+d, 1);
-  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; }
-function daysInMonth(k) { const [y,m] = k.split('-').map(Number); return new Date(y, m, 0).getDate(); }
-function daysLeft(k) {
-  if (k !== monthOf(todayISO())) return daysInMonth(k);
-  return Math.max(1, daysInMonth(k) - new Date().getDate() + 1);
-}
+const shiftMonthKey = (k,d) => { const [y,m] = k.split('-').map(Number); const dt = new Date(y,m-1+d,1);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; };
+const daysInMonth = (k) => { const [y,m] = k.split('-').map(Number); return new Date(y,m,0).getDate(); };
+const daysLeft = (k) => k !== monthOf(todayISO()) ? daysInMonth(k) : Math.max(1, daysInMonth(k) - new Date().getDate() + 1);
 
 const state = {
-  version: 6, apiKey: '', model: 'gemini-2.5-flash', profilePic: '',
-  persona: 'paimon', stealth: false, sound: true,
-  settings: { defaultBudget: 5500000 },
-  categories: [...DEFAULT_CATS],
-  budgets: {}, envelopes: {}, expenses: [], incomes: [], inventory: [],
-  schedule: [], goals: [], chips: [], priceLog: [],
-  view: { month: monthOf(todayISO()) }, scanCache: []
+  version: 8, apiKey: '', model: 'gemini-2.5-flash', profilePic: '',
+  persona: 'paimon', stealth: false, sfx: true, theme: 'auto',
+  settings: { defaultBudget: 5500000 }, categories: [...DEFAULT_CATS],
+  budgets: {}, envelopes: {}, expenses: [], incomes: [], inventory: [], schedule: [], goals: [],
+  chips: [], priceLog: [], debts: [], view: { month: monthOf(todayISO()) }, scanCache: [],
+  tracks: [], music: { volume: .6, muted: false, repeat: 'all', shuffle: false, lastId: null, played: false },
+  ambient: { rain: 0, fire: 0, wind: 0 }, achievements: [], flags: {},
+  focusDone: 0, quoteDate: ''
 };
 
 const saveData = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch (e) { UI.showToast('Penyimpanan penuh, ekspor lalu hapus foto lama', 'error'); } renderAll(); };
+  catch (e) { UI.showToast('Penyimpanan penuh, ekspor lalu hapus lagu/foto', 'error'); } renderAll(); checkAchievements(); };
 const persistOnly = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} };
 
 function loadData() {
   let raw = null;
-  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) {}
-  if (!raw) {
-    try {
-      const old = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null');
-      if (old) {
-        state.settings.defaultBudget = old.settings?.defaultBudget ?? old.budget ?? 5500000;
-        state.apiKey = old.apiKey || ''; state.model = old.model || 'gemini-2.5-flash';
-        state.profilePic = old.profilePic || '';
-        state.categories = old.categories || [...DEFAULT_CATS];
-        state.budgets = old.budgets || {}; state.expenses = old.expenses || [];
-        state.incomes = old.incomes || []; state.inventory = old.inventory || [];
-        state.schedule = old.schedule || []; state.goals = old.goals || [];
-      }
-    } catch (e) {}
-  } else {
-    try {
-      const d = JSON.parse(raw);
-      Object.assign(state, {
-        apiKey: d.apiKey || '', model: d.model || 'gemini-2.5-flash', profilePic: d.profilePic || '',
-        persona: d.persona || 'paimon', stealth: !!d.stealth, sound: d.sound !== false,
-        settings: { defaultBudget: d.settings?.defaultBudget ?? 5500000 },
-        categories: d.categories?.length ? d.categories : [...DEFAULT_CATS],
-        budgets: d.budgets || {}, envelopes: d.envelopes || {},
-        expenses: d.expenses || [], incomes: d.incomes || [], inventory: d.inventory || [],
-        schedule: d.schedule || [], goals: d.goals || [], chips: d.chips || [], priceLog: d.priceLog || []
-      });
-    } catch (e) {}
-  }
+  try { raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_KEY); } catch (e) {}
+  if (!raw) { ensureBudget(state.view.month); return; }
+  try {
+    const d = JSON.parse(raw);
+    Object.assign(state, {
+      apiKey: d.apiKey || '', model: d.model || 'gemini-2.5-flash', profilePic: d.profilePic || '',
+      persona: d.persona || 'paimon', stealth: !!d.stealth, sfx: d.sfx !== false, theme: d.theme || 'auto',
+      settings: { defaultBudget: d.settings?.defaultBudget ?? 5500000 },
+      categories: d.categories?.length ? d.categories : [...DEFAULT_CATS],
+      budgets: d.budgets || {}, envelopes: d.envelopes || {},
+      expenses: d.expenses || [], incomes: d.incomes || [], inventory: d.inventory || [],
+      schedule: d.schedule || [], goals: d.goals || [], chips: d.chips || [], priceLog: d.priceLog || [],
+      debts: d.debts || [], tracks: d.tracks || [],
+      music: Object.assign({ volume:.6, muted:false, repeat:'all', shuffle:false, lastId:null, played:false }, d.music || {}),
+      ambient: Object.assign({ rain:0, fire:0, wind:0 }, d.ambient || {}),
+      achievements: d.achievements || [], flags: d.flags || {}, focusDone: d.focusDone || 0, quoteDate: d.quoteDate || ''
+    });
+  } catch (e) {}
   ensureBudget(state.view.month);
 }
-function ensureBudget(m) {
-  if (state.budgets[m] == null) {
-    const prev = state.budgets[shiftMonthKey(m,-1)];
-    state.budgets[m] = prev != null ? prev : state.settings.defaultBudget;
-  }
-}
+const ensureBudget = (m) => { if (state.budgets[m] == null) {
+  const p = state.budgets[shiftMonthKey(m,-1)]; state.budgets[m] = p != null ? p : state.settings.defaultBudget; } };
 const budgetFor = (m) => { if (state.budgets[m] == null) ensureBudget(m); return state.budgets[m]; };
 const envOf = (m) => (state.envelopes[m] = state.envelopes[m] || {});
 const expensesOf = (m) => state.expenses.filter(e => monthOf(e.date) === m);
@@ -587,430 +625,643 @@ const UI = {
     t.classList.remove('-translate-y-24','opacity-0');
     clearTimeout(UI._t); UI._t = setTimeout(() => t.classList.add('-translate-y-24','opacity-0'), 3600);
   },
-  showLoading: (txt='') => { document.getElementById('loading-text').textContent = txt;
+  showLoading: (x='') => { document.getElementById('loading-text').textContent = x;
     const el = document.getElementById('loading-overlay'); el.classList.remove('hidden'); el.classList.add('flex'); },
   hideLoading: () => { const el = document.getElementById('loading-overlay'); el.classList.add('hidden'); el.classList.remove('flex'); },
-  closeAllModals: () => ['ai-modal','scan-review-modal','inventory-add-modal','budget-modal','envelope-modal','goal-modal','sim-modal','qr-modal','confirm-modal']
+  closeAllModals: () => ['ai-modal','scan-review-modal','inventory-add-modal','budget-modal','envelope-modal','goal-modal','sim-modal','qr-modal','confirm-modal','music-modal','focus-modal','weekly-modal','debt-modal']
     .forEach(id => { const el = document.getElementById(id); el.classList.add('hidden'); el.classList.remove('flex'); })
 };
 window.closeModals = UI.closeAllModals;
 const openModal = (id) => { const el = document.getElementById(id); el.classList.remove('hidden'); el.classList.add('flex'); };
+function confirmAction(text, cb) { document.getElementById('confirm-text').textContent = text;
+  document.getElementById('confirm-yes').onclick = () => { UI.closeAllModals(); cb(); }; openModal('confirm-modal'); }
 
-function confirmAction(text, cb) {
-  document.getElementById('confirm-text').textContent = text;
-  document.getElementById('confirm-yes').onclick = () => { UI.closeAllModals(); cb(); };
-  openModal('confirm-modal');
-}
-
-/* ---- suara ---- */
+/* ===== suara ===== */
 let audioCtx = null;
-function beep(freq = 660, dur = 0.08, type = 'sine') {
-  if (!state.sound) return;
-  try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+function beep(f = 660, d = .08) { if (!state.sfx) return;
+  try { audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
     const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch (e) {}
-}
-
-window.toggleStealth = () => { state.stealth = !state.stealth; document.body.classList.toggle('stealth-mode', state.stealth);
-  document.getElementById('stealth-btn').innerHTML = `<i class="fa-solid fa-eye${state.stealth ? '-slash' : ''}"></i>`; persistOnly(); };
-window.toggleSound = () => { state.sound = !state.sound; document.getElementById('sound-btn').innerHTML =
-  `<i class="fa-solid fa-volume-${state.sound ? 'high' : 'xmark'}"></i>`; persistOnly(); if (state.sound) beep(880); };
-
-window.navigate = (pageId) => {
-  document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
-  document.getElementById(pageId === 'settings' ? 'page-settings' : 'page-' + pageId).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const i = ['dashboard','manual','camera','inventory','schedule'].indexOf(pageId);
-  if (i >= 0) document.querySelectorAll('.nav-item')[i].classList.add('active');
-  document.getElementById('app-container').scrollTop = 0;
-  if (pageId === 'dashboard') renderDashboard();
+    o.frequency.value = f; g.gain.setValueAtTime(.05, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + d);
+    o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d); } catch (e) {} }
+const SFX = {
+  save: () => { beep(760, .07); setTimeout(() => beep(980, .07), 70); },
+  del:  () => { beep(420, .1); setTimeout(() => beep(300, .12), 80); },
+  err:  () => { beep(220, .18); },
+  ach:  () => { beep(880, .08); setTimeout(() => beep(1180, .1), 90); setTimeout(() => beep(1480, .14), 190); }
 };
 
-/* ---- render ---- */
-function renderAll() { renderAvatar(); renderDashboard(); renderInventory(); renderSchedule(); renderCategoryOptions(); }
+/* ===== tema ===== */
+const THEMES = {
+  mondstadt: { acc:'#a8d8c8', acc2:'#7bb5a3', bg1:'#24382f', bg2:'#0d1512', name:'Mondstadt' },
+  liyue:     { acc:'#ebd69f', acc2:'#c4a773', bg1:'#3a2f22', bg2:'#14100b', name:'Liyue' },
+  inazuma:   { acc:'#c9a7e8', acc2:'#8f6bb5', bg1:'#2b2038', bg2:'#0f0a16', name:'Inazuma' },
+  sumeru:    { acc:'#b9d98f', acc2:'#7fa85c', bg1:'#26331f', bg2:'#0c1209', name:'Sumeru' }
+};
+function regionByHour() { const h = new Date().getHours();
+  if (h >= 5 && h < 11) return 'mondstadt'; if (h >= 11 && h < 16) return 'liyue';
+  if (h >= 16 && h < 20) return 'sumeru'; return 'inazuma'; }
+function applyTheme() {
+  const key = state.theme === 'auto' ? regionByHour() : state.theme;
+  const t = THEMES[key] || THEMES.liyue;
+  const r = document.documentElement.style;
+  r.setProperty('--acc', t.acc); r.setProperty('--acc2', t.acc2);
+  r.setProperty('--bg1', t.bg1); r.setProperty('--bg2', t.bg2);
+  document.getElementById('region-name').textContent = t.name + (state.theme === 'auto' ? ' (otomatis)' : '');
+}
+window.setTheme = (v) => { state.theme = v; applyTheme(); persistOnly(); checkAchievements(); };
+
+window.toggleStealth = () => { state.stealth = !state.stealth; document.body.classList.toggle('stealth-mode', state.stealth);
+  document.getElementById('stealth-btn').innerHTML = `<i class="fa-solid fa-eye${state.stealth?'-slash':''}"></i>`; persistOnly(); };
+
+window.navigate = (p) => {
+  document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+  document.getElementById(p === 'settings' ? 'page-settings' : 'page-' + p).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const i = ['dashboard','manual','camera','inventory','schedule'].indexOf(p);
+  if (i >= 0) document.querySelectorAll('.nav-item')[i].classList.add('active');
+  document.getElementById('app-container').scrollTop = 0;
+  if (p === 'dashboard') renderDashboard();
+  if (p === 'settings') renderAchievements();
+  if (p === 'debts') renderDebts();
+};
+
+/* ===== render ===== */
+function renderAll() { renderAvatar(); renderDashboard(); renderInventory(); renderSchedule(); renderCategoryOptions(); renderDebts(); }
 
 function renderAvatar() {
   [['header-avatar','header-avatar-placeholder'],['settings-avatar-preview','settings-avatar-placeholder']].forEach(([a,b]) => {
     const img = document.getElementById(a), ph = document.getElementById(b);
     if (state.profilePic) { img.src = state.profilePic; img.classList.remove('hidden'); ph.classList.add('hidden'); }
-    else { img.classList.add('hidden'); ph.classList.remove('hidden'); }
-  });
+    else { img.classList.add('hidden'); ph.classList.remove('hidden'); } });
 }
 function renderCategoryOptions() {
-  const sel = document.getElementById('manual-cat'), keep = sel.value;
+  const sel = document.getElementById('manual-cat'), k = sel.value;
   sel.innerHTML = state.categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  if (state.categories.includes(keep)) sel.value = keep;
+  if (state.categories.includes(k)) sel.value = k;
 }
-
 function renderDashboard() {
   const m = state.view.month;
-  document.getElementById('month-label').textContent = new Date(m + '-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('month-label').textContent = new Date(m+'-01').toLocaleDateString('id-ID',{month:'long',year:'numeric'});
   document.getElementById('budget-month-label').textContent = m;
-
-  const budget = budgetFor(m), spent = sumOf(expensesOf(m)), income = sumOf(incomesOf(m));
-  const remaining = budget - spent;
-  const dl = daysLeft(m);
-  const allowance = Math.max(0, Math.floor(remaining / dl));
-
-  document.getElementById('daily-allowance').textContent = UI.formatIDR(allowance);
-  document.getElementById('daily-note').textContent = remaining < 0
-    ? `Lewat ${UI.formatIDR(-remaining)} · ${dl} hari lagi`
-    : `${dl} hari tersisa · sisa ${UI.formatIDR(remaining)}`;
-
+  const budget = budgetFor(m), spent = sumOf(expensesOf(m)), income = sumOf(incomesOf(m)), rem = budget - spent, dl = daysLeft(m);
+  document.getElementById('daily-allowance').textContent = UI.formatIDR(Math.max(0, Math.floor(rem/dl)));
+  document.getElementById('daily-note').textContent = rem < 0 ? `Lewat ${UI.formatIDR(-rem)} · ${dl} hari lagi` : `${dl} hari tersisa · sisa ${UI.formatIDR(rem)}`;
   document.getElementById('dash-spent').textContent = UI.formatIDR(spent);
   document.getElementById('dash-income').textContent = UI.formatIDR(income);
-  document.getElementById('dash-remaining').textContent = UI.formatIDR(remaining);
-  document.getElementById('dash-remaining').className = 'font-bold text-[11px] money ' + (remaining < 0 ? 'text-genshin-danger' : 'text-green-100');
-
-  const pct = budget > 0 ? Math.min(spent/budget*100, 100) : 0;
-  const bar = document.getElementById('budget-progress');
-  bar.style.width = pct + '%';
-  bar.className = 'h-full transition-all duration-500 ' + (pct > 85 ? 'bg-gradient-to-r from-orange-400 to-red-500' : 'bg-gradient-to-r from-green-400 to-emerald-400');
+  document.getElementById('dash-remaining').textContent = UI.formatIDR(rem);
+  document.getElementById('dash-remaining').className = 'font-bold text-[11px] money ' + (rem<0?'text-genshin-danger':'text-green-100');
+  const pct = budget > 0 ? Math.min(spent/budget*100,100) : 0;
+  const bar = document.getElementById('budget-progress'); bar.style.width = pct + '%';
+  bar.className = 'h-full transition-all duration-500 ' + (pct>85?'bg-gradient-to-r from-orange-400 to-red-500':'bg-gradient-to-r from-green-400 to-emerald-400');
   document.getElementById('budget-caption').textContent = `Plafon ${UI.formatIDR(budget)} · ${pct.toFixed(0)}%`;
-
   document.getElementById('streak-val').textContent = computeStreak();
-  renderEnvelopes(m); renderSubs(); renderInsights(m); renderInflation(); renderGoals(); renderChips(); renderExpenseList(m); renderStorageInfo();
+  renderQuote(); renderEnvelopes(m); renderSubs(); renderInsights(m); renderInflation(); renderGoals(); renderChips(); renderExpenseList(m); renderStorageInfo();
 }
-
 function computeStreak() {
   let n = 0; const d = new Date();
   for (let i = 0; i < 90; i++) {
     const iso = new Date(d.getTime() - d.getTimezoneOffset()*60000 - i*86400000).toISOString().slice(0,10);
-    const has = state.expenses.some(e => e.date === iso);
-    if (has) { if (i === 0) continue; else break; }
+    if (state.expenses.some(e => e.date === iso)) { if (i === 0) continue; break; }
     n++;
-  }
-  return n;
+  } return n;
 }
-
+const QUOTES = [
+  'Paimon ingat: Mora bukan segalanya, tapi nggak punya Mora itu menyakitkan.',
+  'Amplop yang kosong itu tanda kamu disiplin, bukan tanda kamu sengsara.',
+  'Zhongli bilang Mora itu fana. Paimon bilang tagihan itu nyata.',
+  'Jatah hari ini bukan batas, itu rambu. Pelan-pelan saja.',
+  'Belanja malam hari biasanya bukan kebutuhan. Paimon tahu.',
+  'Satu hari tanpa jajan itu satu hari lebih tenang.',
+  'Kalau ragu, simpan dulu. Besok masih bisa beli.',
+  'Catatan yang rapi membuat dompet lebih tenang daripada doa.',
+  'Ningguang akan bilang: catat dulu, sesali kemudian.',
+  'Yang kecil-kecil itu yang menjebol plafon. Hati-hati.'
+];
+function renderQuote() {
+  const i = Math.floor(Date.now()/86400000) % QUOTES.length;
+  document.getElementById('quote-text').textContent = QUOTES[i];
+}
 function renderEnvelopes(m) {
-  const box = document.getElementById('envelope-list');
-  const env = envOf(m);
+  const box = document.getElementById('envelope-list'), env = envOf(m);
   const keys = Object.keys(env).filter(k => env[k] > 0);
-  if (!keys.length) { box.innerHTML = '<p class="empty-state">Belum ada amplop. Pakai "bagi otomatis" atau atur manual.</p>'; return; }
+  if (!keys.length) { box.innerHTML = '<p class="empty-state">Belum ada amplop.</p>'; return; }
   box.innerHTML = keys.map(cat => {
     const cap = env[cat], used = sumOf(expensesOf(m).filter(e => e.category === cat));
-    const p = Math.min(used/cap*100, 100);
-    const over = used > cap;
-    return `<div class="space-y-1">
-      <div class="flex justify-between text-[11px]"><span>${esc(cat)}</span>
-        <span class="${over ? 'text-genshin-danger' : 'text-genshin-light/60'} money">${UI.formatIDR(used)} / ${UI.formatIDR(cap)}</span></div>
-      <div class="h-1.5 bg-black/50 rounded-full overflow-hidden"><div class="h-full ${over ? 'bg-genshin-danger' : 'bg-genshin-gold'}" style="width:${p}%"></div></div>
-    </div>`;
+    const p = Math.min(used/cap*100,100), over = used > cap;
+    return `<div class="space-y-1"><div class="flex justify-between text-[11px]"><span>${esc(cat)}</span>
+      <span class="${over?'text-genshin-danger':'text-genshin-light/60'} money">${UI.formatIDR(used)} / ${UI.formatIDR(cap)}</span></div>
+      <div class="h-1.5 bg-black/50 rounded-full overflow-hidden"><div class="h-full ${over?'bg-genshin-danger':'bg-genshin-gold'}" style="width:${p}%"></div></div></div>`;
   }).join('');
 }
-
 function renderSubs() {
-  const panel = document.getElementById('subs-panel'), list = document.getElementById('subs-list');
-  const groups = {};
-  state.expenses.filter(e => (Date.now() - new Date(e.date).getTime()) < 120*86400000)
-    .forEach(e => { const k = e.title.toLowerCase() + '|' + e.amount; (groups[k] = groups[k] || []).push(e); });
-  const subs = Object.values(groups).filter(g => g.length >= 3);
+  const panel = document.getElementById('subs-panel'), list = document.getElementById('subs-list'), g = {};
+  state.expenses.filter(e => Date.now() - new Date(e.date).getTime() < 120*86400000)
+    .forEach(e => { const k = e.title.toLowerCase()+'|'+e.amount; (g[k] = g[k] || []).push(e); });
+  const subs = Object.values(g).filter(x => x.length >= 3);
   if (!subs.length) { panel.classList.add('hidden'); return; }
   panel.classList.remove('hidden');
-  list.innerHTML = subs.slice(0,4).map(g => `
-    <div class="flex justify-between items-center bg-black/30 rounded p-2 text-[11px]">
-      <div><p class="font-bold">${esc(g[0].title)}</p><p class="text-genshin-light/50">${g.length}x · ${UI.formatIDR(g[0].amount)}</p></div>
-      <span class="text-genshin-gold money">${UI.formatIDR(g[0].amount)}/bln</span>
-    </div>`).join('');
+  list.innerHTML = subs.slice(0,4).map(x => `<div class="flex justify-between items-center bg-black/30 rounded p-2 text-[11px]">
+    <div><p class="font-bold">${esc(x[0].title)}</p><p class="text-genshin-light/50">${x.length}x</p></div>
+    <span class="text-genshin-gold money">${UI.formatIDR(x[0].amount)}/bln</span></div>`).join('');
 }
-
 function renderInsights(m) {
   const box = document.getElementById('insight-body'), cur = expensesOf(m);
-  if (!cur.length) { box.innerHTML = '<p class="empty-state">Belum ada data bulan ini.</p>'; return; }
+  if (!cur.length) { box.innerHTML = '<p class="empty-state">Belum ada data.</p>'; return; }
   const prev = expensesOf(shiftMonthKey(m,-1));
   const g = (a) => a.reduce((o,e) => { o[e.category] = (o[e.category]||0)+e.amount; return o; }, {});
   const cg = g(cur), pg = g(prev), rows = [];
-  Object.keys(cg).map(c => ({c, n:cg[c], b:pg[c]||0})).filter(r => r.b > 0 && r.n > r.b*1.3)
-    .sort((a,b) => (b.n-b.b)-(a.n-a.b)).slice(0,3).forEach(r => rows.push(
-      `<div class="flex justify-between text-[11px] bg-black/30 rounded p-2 border-l-2 border-genshin-danger"><span>${esc(r.c)} naik ${Math.round((r.n-r.b)/r.b*100)}%</span><span class="text-genshin-danger money">+${UI.formatIDR(r.n-r.b)}</span></div>`));
-  const top = Object.entries(cg).sort((a,b) => b[1]-a[1])[0];
+  Object.keys(cg).map(c => ({c, n:cg[c], b:pg[c]||0})).filter(r => r.b>0 && r.n>r.b*1.3)
+    .sort((a,b)=>(b.n-b.b)-(a.n-a.b)).slice(0,3).forEach(r => rows.push(
+    `<div class="flex justify-between text-[11px] bg-black/30 rounded p-2 border-l-2 border-genshin-danger"><span>${esc(r.c)} naik ${Math.round((r.n-r.b)/r.b*100)}%</span><span class="text-genshin-danger money">+${UI.formatIDR(r.n-r.b)}</span></div>`));
+  const top = Object.entries(cg).sort((a,b)=>b[1]-a[1])[0];
   if (top) rows.push(`<div class="flex justify-between text-[11px] bg-black/30 rounded p-2"><span>Paling boros: ${esc(top[0])}</span><span class="text-genshin-gold money">${UI.formatIDR(top[1])}</span></div>`);
   if (m === monthOf(todayISO())) {
     const day = new Date().getDate(), proj = Math.round(sumOf(cur)/day*daysInMonth(m)), bud = budgetFor(m);
-    rows.push(`<div class="flex justify-between text-[11px] bg-black/30 rounded p-2"><span>Proyeksi akhir bulan</span><span class="${proj>bud?'text-genshin-danger':'text-genshin-ok'} money">${UI.formatIDR(proj)}</span></div>`);
-    if (proj > bud) rows.push(`<p class="text-[11px] text-genshin-danger">Bisa lewat plafon ${UI.formatIDR(proj-bud)}.</p>`);
+    rows.push(`<div class="flex justify-between text-[11px] bg-black/30 rounded p-2"><span>Proyeksi</span><span class="${proj>bud?'text-genshin-danger':'text-genshin-ok'} money">${UI.formatIDR(proj)}</span></div>`);
   }
   box.innerHTML = rows.join('');
 }
-
 function renderInflation() {
-  const panel = document.getElementById('inflation-panel'), list = document.getElementById('inflation-list');
-  const now = Date.now();
-  const byName = {};
-  state.priceLog.filter(p => now - new Date(p.date).getTime() < 90*86400000)
-    .forEach(p => (byName[p.name] = byName[p.name] || []).push(p));
+  const panel = document.getElementById('inflation-panel'), list = document.getElementById('inflation-list'), by = {};
+  state.priceLog.filter(p => Date.now() - new Date(p.date).getTime() < 90*86400000)
+    .forEach(p => (by[p.name] = by[p.name] || []).push(p));
   const rows = [];
-  Object.entries(byName).forEach(([name, arr]) => {
-    if (arr.length < 2) return;
-    arr.sort((a,b) => a.date.localeCompare(b.date));
-    const first = arr[0].unit, last = arr[arr.length-1].unit;
-    if (!first || !last || first === last) return;
-    const ch = (last - first) / first * 100;
-    if (Math.abs(ch) >= 10) rows.push({ name, ch });
-  });
+  Object.entries(by).forEach(([n, a]) => { if (a.length < 2) return;
+    a.sort((x,y) => x.date.localeCompare(y.date));
+    const f = a[0].unit, l = a[a.length-1].unit; if (!f || f === l) return;
+    const ch = (l-f)/f*100; if (Math.abs(ch) >= 10) rows.push({ n, ch }); });
   if (!rows.length) { panel.classList.add('hidden'); return; }
   panel.classList.remove('hidden');
-  list.innerHTML = rows.slice(0,5).map(r => `
-    <div class="flex justify-between text-[11px] bg-black/30 rounded p-2">
-      <span>${esc(r.name)}</span>
-      <span class="${r.ch>0?'text-genshin-danger':'text-genshin-ok'}">${r.ch>0?'+':''}${r.ch.toFixed(0)}%</span>
-    </div>`).join('');
+  list.innerHTML = rows.slice(0,5).map(r => `<div class="flex justify-between text-[11px] bg-black/30 rounded p-2">
+    <span>${esc(r.n)}</span><span class="${r.ch>0?'text-genshin-danger':'text-genshin-ok'}">${r.ch>0?'+':''}${r.ch.toFixed(0)}%</span></div>`).join('');
 }
-
 function renderGoals() {
   const el = document.getElementById('goal-list');
   if (!state.goals.length) { el.innerHTML = '<p class="empty-state">Belum ada target.</p>'; return; }
   el.innerHTML = state.goals.map(g => {
-    const p = g.target > 0 ? Math.min(g.saved/g.target*100, 100) : 0;
-    return `<div class="space-y-1">
-      <div class="flex justify-between text-[11px]"><span>${esc(g.name)}</span><span class="text-genshin-gold money">${UI.formatIDR(g.saved)}/${UI.formatIDR(g.target)}</span></div>
+    const p = g.target > 0 ? Math.min(g.saved/g.target*100,100) : 0;
+    return `<div class="space-y-1"><div class="flex justify-between text-[11px]"><span>${esc(g.name)}</span>
+      <span class="text-genshin-gold money">${UI.formatIDR(g.saved)}/${UI.formatIDR(g.target)}</span></div>
       <div class="h-1.5 bg-black/50 rounded-full overflow-hidden"><div class="h-full bg-genshin-gold" style="width:${p}%"></div></div>
-      <div class="flex gap-3 text-[10px]"><button onclick="addToGoal(${g.id})" class="text-genshin-ok">+ isi</button><button onclick="deleteGoal(${g.id})" class="text-genshin-danger">hapus</button></div>
-    </div>`;
+      <div class="flex gap-3 text-[10px]"><button onclick="addToGoal(${g.id})" class="text-genshin-ok">+ isi</button><button onclick="deleteGoal(${g.id})" class="text-genshin-danger">hapus</button></div></div>`;
   }).join('');
 }
-
 function renderChips() {
   const el = document.getElementById('chip-list');
-  const chips = state.chips.length ? state.chips : [
-    { title:'Warteg', amount:15000, category:'Makanan Luar' },
-    { title:'Bensin', amount:25000, category:'Transportasi' }
-  ];
-  el.innerHTML = chips.map((c,i) => `<button onclick="tapChip(${i})" class="chip">${esc(c.title)} · ${(c.amount/1000)}rb</button>`).join('')
+  const list = state.chips.length ? state.chips : [{title:'Warteg',amount:15000},{title:'Bensin',amount:25000}];
+  el.innerHTML = list.map((c,i) => `<button onclick="tapChip(${i})" class="chip">${esc(c.title)} · ${c.amount/1000}rb</button>`).join('')
     + `<button onclick="openChipModal()" class="chip text-genshin-gold">+ chip</button>`;
 }
-
 function renderExpenseList(m) {
   const box = document.getElementById('recent-expenses');
   const q = document.getElementById('search-expense').value.toLowerCase().trim();
   let list = expensesOf(m);
-  if (q) list = list.filter(e => (e.title + ' ' + (e.note||'')).toLowerCase().includes(q));
+  if (q) list = list.filter(e => (e.title+' '+(e.note||'')).toLowerCase().includes(q));
   list = [...list].sort((a,b) => b.date.localeCompare(a.date) || b.id - a.id);
   if (!list.length) { box.innerHTML = '<p class="empty-state">Tidak ada catatan.</p>'; return; }
-  box.innerHTML = list.map(it => `
-    <div class="flex justify-between items-center p-2.5 bg-black/40 rounded gap-2">
-      <div class="min-w-0 flex-1"><p class="font-bold text-sm truncate">${esc(it.title)}</p>
-        <p class="text-[10px] text-genshin-light/50">${new Date(it.date).toLocaleDateString('id-ID')} · ${esc(it.category)}</p></div>
-      <div class="text-right shrink-0"><p class="text-red-300 font-bold text-xs money">-${UI.formatIDR(it.amount)}</p>
-        <div class="flex gap-2 justify-end"><button onclick="editExpense(${it.id})" class="text-genshin-gold/70 text-[10px]"><i class="fa-solid fa-pen"></i></button>
-        <button onclick="askDeleteExpense(${it.id})" class="text-genshin-danger/80 text-[10px]"><i class="fa-solid fa-trash"></i></button></div></div>
-    </div>`).join('');
+  box.innerHTML = list.map(it => `<div class="flex justify-between items-center p-2.5 bg-black/40 rounded gap-2">
+    <div class="min-w-0 flex-1"><p class="font-bold text-sm truncate">${esc(it.title)}</p>
+    <p class="text-[10px] text-genshin-light/50">${new Date(it.date).toLocaleDateString('id-ID')} · ${esc(it.category)}</p></div>
+    <div class="text-right shrink-0"><p class="text-red-300 font-bold text-xs money">-${UI.formatIDR(it.amount)}</p>
+    <div class="flex gap-2 justify-end"><button onclick="editExpense(${it.id})" class="text-genshin-gold/70 text-[10px]"><i class="fa-solid fa-pen"></i></button>
+    <button onclick="askDeleteExpense(${it.id})" class="text-genshin-danger/80 text-[10px]"><i class="fa-solid fa-trash"></i></button></div></div></div>`).join('');
 }
-
+function renderDebts() {
+  const out = state.debts.filter(d => d.type === 'out' && !d.paid);
+  const inc = state.debts.filter(d => d.type === 'in' && !d.paid);
+  const so = sumOf(out), si = sumOf(inc);
+  ['debt-out','debt-out2'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = UI.formatIDR(so); });
+  ['debt-in','debt-in2'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = UI.formatIDR(si); });
+  const mini = document.getElementById('debt-mini');
+  if (mini) {
+    const active = state.debts.filter(d => !d.paid).slice(0,3);
+    mini.innerHTML = active.length ? active.map(d => `<div class="flex justify-between text-[11px] p-1.5 bg-black/30 rounded mb-1">
+      <span>${esc(d.name)} <span class="text-genshin-light/40">${esc(d.note||'')}</span></span>
+      <span class="${d.type==='out'?'text-red-300':'text-green-300'} money">${UI.formatIDR(d.amount)}</span></div>`).join('')
+      : '<p class="empty-state">Tidak ada utang aktif.</p>';
+  }
+  const list = document.getElementById('debt-list');
+  if (list) {
+    if (!state.debts.length) list.innerHTML = '<li class="empty-state">Belum ada catatan utang.</li>';
+    else list.innerHTML = [...state.debts].sort((a,b) => a.paid - b.paid).map(d => `
+      <li class="flex justify-between items-center py-2.5 px-2 gap-2 ${d.paid?'opacity-50':''}">
+        <div class="min-w-0"><p class="text-sm truncate ${d.paid?'line-through':''}">${esc(d.name)}</p>
+        <p class="text-[10px] ${d.type==='out'?'text-red-300':'text-green-300'} money">${d.type==='out'?'-':'+'}${UI.formatIDR(d.amount)} · ${esc(d.note||'')}</p></div>
+        <div class="flex gap-2 shrink-0"><button onclick="toggleDebt(${d.id})" class="text-[10px] text-genshin-ok">${d.paid?'batal':'lunas'}</button>
+        <button onclick="deleteDebt(${d.id})" class="text-genshin-danger/70 text-[10px]"><i class="fa-solid fa-trash"></i></button></div>
+      </li>`).join('');
+  }
+}
 function renderInventory() {
   const el = document.getElementById('inventory-list');
   if (!state.inventory.length) { el.innerHTML = '<li class="empty-state">Kulkas kosong.</li>'; return; }
   const now = todayISO();
-  el.innerHTML = state.inventory.map(i => {
-    const exp = i.exp && i.exp < now;
+  el.innerHTML = state.inventory.map(i => { const ex = i.exp && i.exp < now;
     return `<li class="flex justify-between items-center py-2.5 px-2 gap-2">
-      <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-leaf ${exp?'text-genshin-danger':'text-genshin-gold/70'}"></i>
-        <div class="min-w-0"><p class="font-bold text-sm truncate">${esc(i.name)}</p>
-        <p class="text-[10px] ${exp?'text-genshin-danger':'text-genshin-gold'}">${i.qty} ${esc(i.unit||'')}${exp?' · kadaluarsa':(i.exp?' · '+esc(i.exp):'')}</p></div></div>
-      <div class="flex gap-1 shrink-0">
-        <button onclick="adjustStock(${i.id},-1)" class="w-6 h-6 rounded-full border border-genshin-border text-[10px]">−</button>
-        <button onclick="adjustStock(${i.id},1)" class="w-6 h-6 rounded-full border border-genshin-border text-[10px]">+</button>
-        <button onclick="deleteInventory(${i.id})" class="text-genshin-danger/70 px-1"><i class="fa-solid fa-trash text-[10px]"></i></button>
-      </div></li>`;
-  }).join('');
+      <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-leaf ${ex?'text-genshin-danger':'text-genshin-gold/70'}"></i>
+      <div class="min-w-0"><p class="font-bold text-sm truncate">${esc(i.name)}</p>
+      <p class="text-[10px] ${ex?'text-genshin-danger':'text-genshin-gold'}">${i.qty} ${esc(i.unit||'')}${ex?' · kadaluarsa':''}</p></div></div>
+      <div class="flex gap-1 shrink-0"><button onclick="adjustStock(${i.id},-1)" class="w-6 h-6 rounded-full border border-genshin-border text-[10px]">−</button>
+      <button onclick="adjustStock(${i.id},1)" class="w-6 h-6 rounded-full border border-genshin-border text-[10px]">+</button>
+      <button onclick="deleteInventory(${i.id})" class="text-genshin-danger/70 px-1"><i class="fa-solid fa-trash text-[10px]"></i></button></div></li>`; }).join('');
 }
-
 function renderSchedule() {
   const el = document.getElementById('schedule-list');
   if (!state.schedule.length) { el.innerHTML = '<li class="empty-state">Belum ada jadwal.</li>'; return; }
-  const s = [...state.schedule].sort((a,b) => a.done === b.done ? 0 : a.done ? 1 : -1);
-  el.innerHTML = s.map(t => `<li class="flex justify-between items-center py-2.5 px-2 gap-2 ${t.done?'opacity-50':''}">
+  el.innerHTML = [...state.schedule].sort((a,b) => a.done === b.done ? 0 : a.done ? 1 : -1).map(t =>
+    `<li class="flex justify-between items-center py-2.5 px-2 gap-2 ${t.done?'opacity-50':''}">
     <div class="flex gap-2 flex-1 min-w-0 cursor-pointer" onclick="toggleTask(${t.id})">
-      <div class="w-5 h-5 rounded-full border-2 border-genshin-gold shrink-0 flex items-center justify-center">${t.done?'<div class="w-2.5 h-2.5 bg-genshin-gold rounded-full"></div>':''}</div>
-      <div class="min-w-0"><span class="text-sm block truncate ${t.done?'line-through':''}">${esc(t.task)}</span>
-      ${t.remind?`<span class="text-[10px] text-genshin-gold/60">${new Date(t.remind).toLocaleString('id-ID')}</span>`:''}</div></div>
+    <div class="w-5 h-5 rounded-full border-2 border-genshin-gold shrink-0 flex items-center justify-center">${t.done?'<div class="w-2.5 h-2.5 bg-genshin-gold rounded-full"></div>':''}</div>
+    <div class="min-w-0"><span class="text-sm block truncate ${t.done?'line-through':''}">${esc(t.task)}</span>
+    ${t.remind?`<span class="text-[10px] text-genshin-gold/60">${new Date(t.remind).toLocaleString('id-ID')}</span>`:''}</div></div>
     <button onclick="deleteTask(${t.id})" class="text-genshin-danger/50 p-1"><i class="fa-solid fa-xmark text-xs"></i></button></li>`).join('');
 }
-
 function renderStorageInfo() {
   const el = document.getElementById('storage-info'); if (!el) return;
   let b = 0; try { b = new Blob([localStorage.getItem(STORAGE_KEY)||'']).size; } catch (e) {}
-  el.textContent = `${(b/1024).toFixed(1)} KB · ${state.expenses.length} transaksi`;
+  el.textContent = `${(b/1024).toFixed(1)} KB · ${state.expenses.length} transaksi · ${state.tracks.length} lagu`;
 }
 
-/* ---- persona ---- */
+/* ===== musik ===== */
+const audioEl = document.getElementById('player-audio');
+const DB_NAME = 'paimon_audio';
+const idb = () => new Promise((res, rej) => { const r = indexedDB.open(DB_NAME, 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('tracks'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const idbPut = async (k, b) => { const db = await idb(); return new Promise((res, rej) => {
+  const tx = db.transaction('tracks','readwrite'); tx.objectStore('tracks').put(b, k);
+  tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); };
+const idbGet = async (k) => { const db = await idb(); return new Promise((res, rej) => {
+  const tx = db.transaction('tracks','readonly'); const rq = tx.objectStore('tracks').get(k);
+  rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); }); };
+const idbDel = async (k) => { const db = await idb(); return new Promise((res) => {
+  const tx = db.transaction('tracks','readwrite'); tx.objectStore('tracks').delete(k); tx.oncomplete = res; }); };
+
+let currentUrl = null;
+const currentTrack = () => state.tracks.find(t => t.id === state.music.lastId) || null;
+
+window.openMusic = () => { renderPlaylist(); openModal('music-modal'); updatePlayerUI(); };
+window.closeMusic = () => UI.closeAllModals();
+
+window.togglePlay = () => {
+  if (!state.tracks.length) return UI.showToast('Tambah lagu dulu', 'error');
+  if (audioEl.paused) { if (!audioEl.src) playTrack(state.music.lastId || state.tracks[0].id); else audioEl.play().catch(() => {}); }
+  else audioEl.pause();
+};
+async function playTrack(id) {
+  const t = state.tracks.find(x => x.id === id); if (!t) return;
+  try {
+    if (t.source === 'idb') {
+      const blob = await idbGet(t.key);
+      if (!blob) return UI.showToast('File lagu hilang', 'error');
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+      currentUrl = URL.createObjectURL(blob); audioEl.src = currentUrl;
+    } else { if (currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; } audioEl.src = t.url; }
+    audioEl.volume = state.music.muted ? 0 : state.music.volume;
+    await audioEl.play().catch(() => {});
+    state.music.lastId = id; state.music.played = true; persistOnly(); updatePlayerUI(); renderPlaylist();
+    updateLockScreen(t);
+  } catch (e) { UI.showToast('Lagu gagal diputar', 'error'); }
+}
+function updateLockScreen(t) {
+  if (!('mediaSession' in navigator)) return;
+  const m = state.view.month, allow = Math.max(0, Math.floor((budgetFor(m) - sumOf(expensesOf(m))) / daysLeft(m)));
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: t ? t.name : 'Paimon', artist: `Sisa hari ini ${UI.formatIDR(allow)}`, album: 'Paimon\'s Pocket'
+  });
+  navigator.mediaSession.setActionHandler('play', () => audioEl.play());
+  navigator.mediaSession.setActionHandler('pause', () => audioEl.pause());
+  navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+  navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
+}
+window.nextTrack = () => {
+  if (!state.tracks.length) return;
+  const i = state.tracks.findIndex(t => t.id === state.music.lastId);
+  let n = state.music.shuffle ? Math.floor(Math.random()*state.tracks.length) : i + 1;
+  if (n >= state.tracks.length) n = 0;
+  playTrack(state.tracks[n].id);
+};
+window.prevTrack = () => {
+  if (!state.tracks.length) return;
+  if (audioEl.currentTime > 3) { audioEl.currentTime = 0; return; }
+  const i = state.tracks.findIndex(t => t.id === state.music.lastId);
+  playTrack(state.tracks[(i - 1 + state.tracks.length) % state.tracks.length].id);
+};
+window.toggleShuffle = () => { state.music.shuffle = !state.music.shuffle; persistOnly(); updatePlayerUI(); };
+window.cycleRepeat = () => { const o = ['all','one','off']; state.music.repeat = o[(o.indexOf(state.music.repeat)+1)%3]; persistOnly(); updatePlayerUI(); };
+window.toggleMute = () => { state.music.muted = !state.music.muted; audioEl.volume = state.music.muted ? 0 : state.music.volume; persistOnly(); updatePlayerUI(); };
+
+function updatePlayerUI() {
+  const playing = !audioEl.paused && audioEl.src, t = currentTrack();
+  document.getElementById('vinyl').classList.toggle('playing', playing);
+  document.getElementById('tonearm').classList.toggle('on', !!playing);
+  document.getElementById('play-btn').innerHTML = `<i class="fa-solid fa-${playing?'pause':'play'}"></i>`;
+  document.getElementById('np-title').textContent = t ? t.name : 'Belum ada lagu';
+  document.getElementById('np-artist').textContent = t ? (t.source === 'idb' ? 'dari file HP' : 'dari URL') : 'Tambahkan lagu favoritmu';
+  document.getElementById('mini-title').textContent = t ? t.name : '—';
+  document.getElementById('mini-player').classList.toggle('hidden', !state.tracks.length);
+  document.getElementById('mini-disc').classList.toggle('playing', !!playing);
+  document.getElementById('mute-btn').innerHTML = `<i class="fa-solid fa-volume-${state.music.muted?'xmark':'high'}"></i>`;
+  document.getElementById('shuffle-btn').className = state.music.shuffle ? 'text-genshin-gold' : 'text-genshin-light/50';
+  document.getElementById('repeat-btn').className = state.music.repeat === 'off' ? 'text-genshin-light/30' : 'text-genshin-gold';
+  document.body.classList.toggle('music-on', !!playing);
+  document.getElementById('volume').value = Math.round(state.music.volume*100);
+}
+function fmtTime(s) { if (!isFinite(s)) return '0:00'; const m = Math.floor(s/60); return `${m}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+audioEl.addEventListener('timeupdate', () => {
+  if (audioEl.duration) document.getElementById('seek').value = (audioEl.currentTime / audioEl.duration) * 1000;
+  document.getElementById('cur-time').textContent = fmtTime(audioEl.currentTime);
+  document.getElementById('dur-time').textContent = fmtTime(audioEl.duration);
+});
+audioEl.addEventListener('ended', () => {
+  if (state.music.repeat === 'one') { audioEl.currentTime = 0; audioEl.play(); }
+  else nextTrack();
+});
+audioEl.addEventListener('play', updatePlayerUI);
+audioEl.addEventListener('pause', updatePlayerUI);
+document.getElementById('seek').addEventListener('input', (e) => {
+  if (audioEl.duration) audioEl.currentTime = (e.target.value/1000) * audioEl.duration;
+});
+document.getElementById('volume').addEventListener('input', (e) => {
+  state.music.volume = e.target.value/100; state.music.muted = false;
+  audioEl.volume = state.music.volume; persistOnly(); updatePlayerUI();
+});
+function renderPlaylist() {
+  const el = document.getElementById('playlist');
+  if (!state.tracks.length) { el.innerHTML = '<p class="empty-state">Playlist kosong.</p>'; return; }
+  el.innerHTML = state.tracks.map(t => `<div class="flex justify-between items-center p-2 rounded ${t.id===state.music.lastId?'bg-genshin-gold/15':''}">
+    <button onclick="playTrack(${t.id})" class="flex-1 text-left text-xs truncate">${esc(t.name)}</button>
+    <button onclick="deleteTrack(${t.id})" class="text-genshin-danger/70 px-2 text-[10px]"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+}
+window.addSongUrl = () => {
+  const inp = document.getElementById('song-url'), url = inp.value.trim();
+  if (!/^https?:\/\//.test(url)) return UI.showToast('URL harus http/https', 'error');
+  const name = prompt('Nama lagu:', url.split('/').pop().replace(/\.[a-z0-9]+$/i,'')) || 'Lagu';
+  state.tracks.push({ id: Date.now(), name, source: 'url', url });
+  inp.value = ''; saveData(); renderPlaylist(); UI.showToast('Lagu ditambahkan');
+};
+window.addSongFiles = async (e) => {
+  const files = [...e.target.files]; e.target.value = '';
+  for (const f of files) {
+    if (!f.type.startsWith('audio/')) continue;
+    if (f.size > 25*1024*1024) { UI.showToast(`${f.name} terlalu besar`, 'error'); continue; }
+    const key = 'f' + Date.now() + Math.random().toString(36).slice(2,6);
+    await idbPut(key, f);
+    state.tracks.push({ id: Date.now()+Math.random(), name: f.name.replace(/\.[a-z0-9]+$/i,''), source: 'idb', key });
+  }
+  saveData(); renderPlaylist(); UI.showToast('Lagu ditambahkan');
+};
+window.deleteTrack = (id) => {
+  const t = state.tracks.find(x => x.id === id); if (!t) return;
+  if (t.source === 'idb') idbDel(t.key);
+  if (state.music.lastId === id) { audioEl.pause(); audioEl.removeAttribute('src'); state.music.lastId = null; }
+  state.tracks = state.tracks.filter(x => x.id !== id);
+  saveData(); renderPlaylist(); updatePlayerUI();
+};
+
+/* ===== ambient ===== */
+let ambCtx = null, ambNodes = {};
+function initAmbient() {
+  if (ambCtx) return;
+  ambCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const len = ambCtx.sampleRate * 2;
+  const buf = ambCtx.createBuffer(1, len, ambCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  const make = (type, freq, q) => {
+    const src = ambCtx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const flt = ambCtx.createBiquadFilter(); flt.type = type; flt.frequency.value = freq; if (q) flt.Q.value = q;
+    const g = ambCtx.createGain(); g.gain.value = 0;
+    src.connect(flt); flt.connect(g); g.connect(ambCtx.destination); src.start(); return g; };
+  ambNodes.rain = make('highpass', 1400);
+  ambNodes.fire = make('lowpass', 420);
+  ambNodes.wind = make('bandpass', 500, .7);
+}
+function setAmbient(name, val) {
+  initAmbient(); if (ambCtx.state === 'suspended') ambCtx.resume();
+  const g = ambNodes[name]; if (g) g.gain.value = (val/100) * .35;
+  state.ambient[name] = val; persistOnly();
+}
+document.querySelectorAll('input[data-amb]').forEach(inp =>
+  inp.addEventListener('input', (e) => setAmbient(e.target.dataset.amb, +e.target.value)));
+
+/* ===== timer fokus ===== */
+let focusLeft = 25*60, focusInt = null;
+window.openFocus = () => { document.getElementById('focus-time').textContent = '25:00'; focusLeft = 25*60; openModal('focus-modal'); };
+window.toggleFocus = () => {
+  if (focusInt) { clearInterval(focusInt); focusInt = null; document.getElementById('focus-toggle').textContent = 'Lanjut'; return; }
+  document.getElementById('focus-toggle').textContent = 'Jeda';
+  focusInt = setInterval(() => {
+    focusLeft--;
+    document.getElementById('focus-time').textContent = `${String(Math.floor(focusLeft/60)).padStart(2,'0')}:${String(focusLeft%60).padStart(2,'0')}`;
+    if (focusLeft <= 0) { clearInterval(focusInt); focusInt = null;
+      state.focusDone++; SFX.ach(); UI.showToast('Sesi fokus selesai!');
+      if ('Notification' in window && Notification.permission === 'granted') new Notification("Paimon's Pocket", { body: 'Sesi fokus selesai. Kamu bertahan!' });
+      document.getElementById('focus-toggle').textContent = 'Mulai'; saveData(); }
+  }, 1000);
+};
+window.resetFocus = () => { if (focusInt) clearInterval(focusInt); focusInt = null; focusLeft = 25*60;
+  document.getElementById('focus-time').textContent = '25:00'; document.getElementById('focus-toggle').textContent = 'Mulai'; };
+
+/* ===== laporan mingguan ===== */
+window.openWeekly = () => { drawWeekly(); openModal('weekly-modal'); };
+function drawWeekly() {
+  const c = document.getElementById('weekly-canvas');
+  const W = 640, H = 800; c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--bg1').trim() || '#2a3449');
+  g.addColorStop(1, '#0d1017');
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+  const acc = getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#ebd69f';
+  x.fillStyle = acc; x.font = 'bold 34px Georgia'; x.textAlign = 'center';
+  x.fillText('Laporan 7 Hari', W/2, 70);
+  x.font = '16px sans-serif'; x.fillStyle = 'rgba(236,229,216,.6)';
+  const from = new Date(Date.now() - 6*86400000).toLocaleDateString('id-ID');
+  x.fillText(`${from} — ${new Date().toLocaleDateString('id-ID')}`, W/2, 100);
+  const recent = state.expenses.filter(e => Date.now() - new Date(e.date).getTime() < 7*86400000);
+  const total = sumOf(recent);
+  x.fillStyle = '#fff'; x.font = 'bold 46px sans-serif';
+  x.fillText(UI.formatIDR(total), W/2, 175);
+  x.font = '15px sans-serif'; x.fillStyle = 'rgba(236,229,216,.55)';
+  x.fillText(`${recent.length} transaksi · ${computeStreak()} hari hemat`, W/2, 205);
+  const cats = {}; recent.forEach(e => cats[e.category] = (cats[e.category]||0) + e.amount);
+  const top = Object.entries(cats).sort((a,b) => b[1]-a[1]).slice(0,5);
+  x.textAlign = 'left'; let y = 275;
+  x.font = 'bold 18px Georgia'; x.fillStyle = acc; x.fillText('Kategori terbesar', 60, y); y += 40;
+  top.forEach(([name, val]) => {
+    const w = Math.max(20, (val / (top[0][1] || 1)) * 340);
+    x.fillStyle = 'rgba(236,229,216,.85)'; x.font = '15px sans-serif'; x.fillText(name, 60, y);
+    x.fillStyle = 'rgba(235,214,159,.35)'; x.fillRect(60, y + 8, w, 12);
+    x.fillStyle = acc; x.fillText(UI.formatIDR(val), 60 + w + 10, y + 19);
+    y += 48;
+  });
+  x.fillStyle = 'rgba(236,229,216,.75)'; x.font = '15px sans-serif';
+  const m = state.view.month;
+  x.fillText(`Sisa plafon bulan: ${UI.formatIDR(budgetFor(m) - sumOf(expensesOf(m)))}`, 60, H - 110);
+  x.fillText(`Pencapaian: ${state.achievements.length}`, 60, H - 80);
+  x.fillStyle = acc; x.font = 'italic 14px Georgia'; x.textAlign = 'center';
+  x.fillText('Paimon\'s Pocket', W/2, H - 35);
+}
+window.downloadWeekly = () => {
+  const a = document.createElement('a');
+  a.href = document.getElementById('weekly-canvas').toDataURL('image/png');
+  a.download = `laporan-${todayISO()}.png`; a.click(); UI.showToast('Gambar disimpan');
+};
+
+/* ===== pencapaian ===== */
+const ACH = [
+  { id:'first', n:'Langkah Pertama', d:'Catat 1 transaksi', t:() => state.expenses.length >= 1 },
+  { id:'ten', n:'Rajin', d:'30 transaksi', t:() => state.expenses.length >= 30 },
+  { id:'streak3', n:'Tiga Hari', d:'3 hari hemat', t:() => computeStreak() >= 3 },
+  { id:'streak7', n:'Seminggu', d:'7 hari hemat', t:() => computeStreak() >= 7 },
+  { id:'scan', n:'Detektif Struk', d:'Scan struk', t:() => state.expenses.some(e => e.note === 'scan') },
+  { id:'chef', n:'Koki Dadakan', d:'Pakai AI Chef', t:() => state.flags.chef },
+  { id:'dj', n:'Disc Jockey', d:'Putar lagu', t:() => state.music.played },
+  { id:'saver', n:'Penabung', d:'Isi target', t:() => state.goals.some(g => g.saved > 0) },
+  { id:'backup', n:'Aman', d:'Ekspor data', t:() => state.flags.backup },
+  { id:'debt', n:'Juru Buku', d:'Catat utang', t:() => state.debts.length >= 1 },
+  { id:'focus', n:'Fokus', d:'Selesaikan timer', t:() => state.focusDone >= 1 },
+  { id:'theme', n:'Pengelana', d:'Ganti tema region', t:() => state.flags.theme }
+];
+let achGuard = false;
+function checkAchievements() {
+  if (achGuard) return; achGuard = true;
+  ACH.forEach(a => { if (!state.achievements.includes(a.id) && a.t()) {
+    state.achievements.push(a.id); UI.showToast('Pencapaian: ' + a.n); SFX.ach();
+    persistOnly(); renderAchievements(); } });
+  achGuard = false;
+}
+function renderAchievements() {
+  const el = document.getElementById('ach-list'); if (!el) return;
+  el.innerHTML = ACH.map(a => { const got = state.achievements.includes(a.id);
+    return `<div class="flex justify-between items-center text-[11px] p-2 rounded ${got?'bg-genshin-gold/15':'bg-black/20 opacity-60'}">
+      <div><p class="${got?'text-genshin-gold':''}">${a.n}</p><p class="text-genshin-light/50 text-[10px]">${a.d}</p></div>
+      <i class="fa-solid ${got?'fa-medal text-genshin-gold':'fa-lock text-genshin-light/30'}"></i></div>`; }).join('');
+}
+
+/* ===== persona ===== */
 const PERSONA = {
-  paimon: { name:'Paimon', prompt:'Kamu Paimon, maskot Genshin yang drama, cerewet, perhatian tapi suka lebay. Maksimal 1 kalimat pendek.' },
-  ningguang: { name:'Ningguang', prompt:'Kamu Ningguang, Tianquan Liyue: dingin, elegan, sangat hitungan soal Mora. Maksimal 1 kalimat pendek.' },
-  zhongli: { name:'Zhongli', prompt:'Kamu Zhongli, konsultan funeral yang filosofis dan ironisnya suka boros. Maksimal 1 kalimat pendek.' }
+  paimon: { p:'Kamu Paimon, drama dan cerewet. Maks 1 kalimat.' },
+  ningguang: { p:'Kamu Ningguang, dingin dan hitungan. Maks 1 kalimat.' },
+  zhongli: { p:'Kamu Zhongli, filosofis dan ironis. Maks 1 kalimat.' }
 };
-const FALLBACK_LINES = {
-  paimon: ['Tercatat! Paimon awasi kamu ya.', 'Hmm, segitu lagi. Paimon ikut nggak tega.', 'Jangan lupa makan, bukan cuma jajan.'],
-  ningguang: ['Tercatat. Mora-mu menyusut.', 'Investasi yang buruk, tapi tercatat.', 'Perhitungkan lagi langkahmu.'],
-  zhongli: ['Tercatat. Mora memang fana.', 'Begitulah harga sebuah kenyamanan.', 'Catatan ini akan menjadi sejarah.']
+const FALLBACK = {
+  paimon: ['Tercatat! Paimon awasi ya.', 'Hmm, segitu lagi.'],
+  ningguang: ['Tercatat. Mora-mu menyusut.', 'Perhitungkan lagi.'],
+  zhongli: ['Tercatat. Mora memang fana.', 'Catatan ini akan menjadi sejarah.']
 };
-
-function showPersona(text) {
-  const b = document.getElementById('persona-bubble');
-  document.getElementById('persona-text').textContent = text;
-  b.classList.add('show');
-  clearTimeout(showPersona._t);
-  showPersona._t = setTimeout(() => b.classList.remove('show'), 6000);
-}
-
+function showPersona(txt) { const b = document.getElementById('persona-bubble');
+  document.getElementById('persona-text').textContent = txt; b.classList.add('show');
+  clearTimeout(showPersona._t); showPersona._t = setTimeout(() => b.classList.remove('show'), 6000); }
 async function personaReact(ctx) {
   if (state.persona === 'off') return;
-  const p = PERSONA[state.persona] || PERSONA.paimon;
-  const pool = FALLBACK_LINES[state.persona] || FALLBACK_LINES.paimon;
+  const pool = FALLBACK[state.persona] || FALLBACK.paimon;
   const local = pool[Math.floor(Math.random()*pool.length)];
   if (!state.apiKey) return showPersona(local);
-  try {
-    const txt = await callAI(`${p.prompt} Konteks: ${ctx} Beri satu reaksi singkat.`);
-    showPersona(txt.trim().split('\n')[0].slice(0, 160) || local);
-  } catch (e) { showPersona(local); }
+  try { const t = await callAI(`${PERSONA[state.persona].p} Konteks: ${ctx} Satu reaksi singkat.`);
+    showPersona(t.trim().split('\n')[0].slice(0,160) || local); } catch (e) { showPersona(local); }
 }
 
-/* ---- AI ---- */
+/* ===== AI ===== */
 async function callAI(prompt, base64 = null, asJson = false) {
   const key = state.apiKey || DEFAULT_KEY;
   const chain = [...new Set([state.model,'gemini-2.5-flash','gemini-2.5-flash-lite','gemini-2.0-flash'].filter(Boolean))];
   const payload = { contents: [{ parts: [{ text: prompt }] }] };
   if (base64) payload.contents[0].parts.push({ inlineData: { mimeType:'image/jpeg', data: base64 } });
   if (asJson) payload.generationConfig = { responseMimeType:'application/json' };
-  let lastErr = '';
+  let last = '';
   for (const model of chain) {
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 45000);
+    const ctrl = new AbortController(), tm = setTimeout(() => ctrl.abort(), 45000);
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
-      const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:ctrl.signal });
-      clearTimeout(timer);
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) { const t = data?.candidates?.[0]?.content?.parts?.[0]?.text; if (t) return t; lastErr = 'Jawaban kosong'; continue; }
-      lastErr = data?.error?.message || `HTTP ${res.status}`;
-      if (res.status === 401 || res.status === 403) throw new Error('API key ditolak. Cek Pengaturan.');
-    } catch (err) {
-      clearTimeout(timer);
-      if (String(err.message).includes('API key')) throw err;
-      lastErr = err.name === 'AbortError' ? 'Waktu habis' : err.message;
-    }
+      const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:ctrl.signal });
+      clearTimeout(tm);
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) { const t = d?.candidates?.[0]?.content?.parts?.[0]?.text; if (t) return t; last = 'kosong'; continue; }
+      last = d?.error?.message || `HTTP ${r.status}`;
+      if (r.status === 401 || r.status === 403) throw new Error('API key ditolak');
+    } catch (e) { clearTimeout(tm); if (String(e.message).includes('API key')) throw e;
+      last = e.name === 'AbortError' ? 'Waktu habis' : e.message; }
   }
-  throw new Error(lastErr || 'Koneksi AI gagal');
+  throw new Error(last || 'AI gagal');
 }
 
-/* ---- gambar ---- */
-function compressImage(file, maxSide = 1280, q = 0.72) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
+/* ===== gambar ===== */
+function compressImage(file, max = 1280, q = .72) {
+  return new Promise((res, rej) => { const r = new FileReader();
     r.onerror = () => rej(new Error('baca gagal'));
-    r.onload = (ev) => {
-      const img = new Image();
-      img.onerror = () => rej(new Error('gambar rusak'));
-      img.onload = () => {
-        let { width: w, height: h } = img;
-        const s = Math.min(1, maxSide / Math.max(w,h));
+    r.onload = (ev) => { const img = new Image(); img.onerror = () => rej(new Error('rusak'));
+      img.onload = () => { let { width:w, height:h } = img; const s = Math.min(1, max/Math.max(w,h));
         w = Math.round(w*s); h = Math.round(h*s);
         const c = document.createElement('canvas'); c.width = w; c.height = h;
-        const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
-        ctx.drawImage(img, 0, 0, w, h);
-        res(c.toDataURL('image/jpeg', q));
-      };
-      img.src = ev.target.result;
-    };
-    r.readAsDataURL(file);
-  });
+        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(img,0,0,w,h);
+        res(c.toDataURL('image/jpeg', q)); };
+      img.src = ev.target.result; };
+    r.readAsDataURL(file); });
 }
 
-/* ---- CRUD ---- */
-window.resetManualForm = () => {
-  document.getElementById('form-manual').reset();
-  document.getElementById('manual-id').value = '';
-  document.getElementById('manual-date').value = todayISO();
-  document.getElementById('manual-submit').textContent = 'Simpan';
-  renderCategoryOptions();
-};
+/* ===== CRUD ===== */
+window.resetManualForm = () => { document.getElementById('form-manual').reset();
+  document.getElementById('manual-id').value = ''; document.getElementById('manual-date').value = todayISO();
+  document.getElementById('manual-submit').textContent = 'Simpan'; renderCategoryOptions(); };
 
 window.saveManualExpense = (e) => {
   e.preventDefault();
   const id = document.getElementById('manual-id').value;
-  const p = {
-    title: document.getElementById('manual-title').value.trim(),
-    amount: parseInt(document.getElementById('manual-amount').value, 10),
+  const p = { title: document.getElementById('manual-title').value.trim(),
+    amount: parseInt(document.getElementById('manual-amount').value,10),
     date: document.getElementById('manual-date').value || todayISO(),
     category: document.getElementById('manual-cat').value,
-    note: document.getElementById('manual-note').value.trim()
-  };
+    note: document.getElementById('manual-note').value.trim() };
   if (!p.title || !p.amount) return;
   const m = monthOf(p.date), before = sumOf(expensesOf(m));
-
-  if (id) {
-    const i = state.expenses.findIndex(x => x.id == id);
-    if (i >= 0) state.expenses[i] = { ...state.expenses[i], ...p };
-    UI.showToast('Diperbarui');
-  } else {
-    state.expenses.push({ id: Date.now(), ...p });
-    registerChip(p.title, p.amount, p.category);
-    UI.showToast('Dicatat');
-    beep(720);
-  }
+  if (id) { const i = state.expenses.findIndex(x => x.id == id); if (i >= 0) state.expenses[i] = { ...state.expenses[i], ...p }; UI.showToast('Diperbarui'); }
+  else { state.expenses.push({ id: Date.now(), ...p }); registerChip(p.title, p.amount); UI.showToast('Dicatat'); SFX.save(); }
   resetManualForm(); saveData(); navigate('dashboard');
-
-  const cap = envOf(m)[p.category];
-  const used = sumOf(expensesOf(m).filter(x => x.category === p.category));
-  if (cap && used > cap) personaReact(`Baru belanja ${p.title} ${UI.formatIDR(p.amount)}. Amplop ${p.category} sudah lewat ${UI.formatIDR(used-cap)}.`);
-  else if (budgetFor(m) > 0 && before + p.amount > budgetFor(m)) personaReact(`Total bulan ini lewat plafon ${UI.formatIDR(before + p.amount - budgetFor(m))}.`);
-  else personaReact(`Baru mencatat ${p.title} sebesar ${UI.formatIDR(p.amount)} di kategori ${p.category}.`);
+  const cap = envOf(m)[p.category], used = sumOf(expensesOf(m).filter(x => x.category === p.category));
+  if (cap && used > cap) personaReact(`Amplop ${p.category} lewat ${UI.formatIDR(used-cap)}.`);
+  else if (budgetFor(m) > 0 && before + p.amount > budgetFor(m)) personaReact(`Bulan ini lewat plafon.`);
+  else personaReact(`Mencatat ${p.title} ${UI.formatIDR(p.amount)}.`);
 };
-
-function registerChip(title, amount, category) {
-  if (!state.chips.some(c => c.title === title && c.amount === amount))
-    state.chips.unshift({ title, amount, category });
-  state.chips = state.chips.slice(0, 8);
-}
-
+function registerChip(t, a) { if (!state.chips.some(c => c.title === t && c.amount === a)) state.chips.unshift({ title:t, amount:a });
+  state.chips = state.chips.slice(0,8); }
 window.tapChip = (i) => {
-  const list = state.chips.length ? state.chips : [{title:'Warteg',amount:15000,category:'Makanan Luar'},{title:'Bensin',amount:25000,category:'Transportasi'}];
+  const list = state.chips.length ? state.chips : [{title:'Warteg',amount:15000},{title:'Bensin',amount:25000}];
   const c = list[i]; if (!c) return;
-  state.expenses.push({ id: Date.now(), title: c.title, amount: c.amount, date: todayISO(), category: c.category, note: '' });
-  state.chips.sort((a,b) => 0);
-  saveData(); beep(820);
-  UI.showToast(`${c.title} ${UI.formatIDR(c.amount)} dicatat`);
-  personaReact(`Baru mencatat ${c.title} sebesar ${UI.formatIDR(c.amount)}.`);
+  state.expenses.push({ id: Date.now(), title: c.title, amount: c.amount, date: todayISO(), category: state.categories[0], note: '' });
+  saveData(); SFX.save(); UI.showToast(`${c.title} dicatat`); personaReact(`Mencatat ${c.title} ${UI.formatIDR(c.amount)}.`);
 };
-
-window.openChipModal = () => {
-  const t = prompt('Nama chip:'); if (!t) return;
-  const a = parseInt(prompt('Nominal:'), 10); if (!a) return;
-  state.chips.unshift({ title: t, amount: a, category: state.categories[0] });
-  saveData();
-};
-
-window.editExpense = (id) => {
-  const it = state.expenses.find(x => x.id == id); if (!it) return;
-  navigate('manual');
-  document.getElementById('manual-id').value = it.id;
-  document.getElementById('manual-title').value = it.title;
-  document.getElementById('manual-amount').value = it.amount;
-  document.getElementById('manual-date').value = it.date;
-  document.getElementById('manual-note').value = it.note || '';
-  renderCategoryOptions();
-  document.getElementById('manual-cat').value = it.category;
-  document.getElementById('manual-submit').textContent = 'Update';
-};
-
+window.openChipModal = () => { const t = prompt('Nama chip:'); if (!t) return;
+  const a = parseInt(prompt('Nominal:'),10); if (!a) return;
+  state.chips.unshift({ title:t, amount:a }); saveData(); };
+window.editExpense = (id) => { const it = state.expenses.find(x => x.id == id); if (!it) return;
+  navigate('manual'); document.getElementById('manual-id').value = it.id;
+  document.getElementById('manual-title').value = it.title; document.getElementById('manual-amount').value = it.amount;
+  document.getElementById('manual-date').value = it.date; document.getElementById('manual-note').value = it.note || '';
+  renderCategoryOptions(); document.getElementById('manual-cat').value = it.category;
+  document.getElementById('manual-submit').textContent = 'Update'; };
 window.askDeleteExpense = (id) => confirmAction('Hapus catatan ini?', () => {
-  state.expenses = state.expenses.filter(x => x.id != id); saveData(); UI.showToast('Dihapus');
-});
-
-window.saveIncome = (e) => {
-  e.preventDefault();
+  state.expenses = state.expenses.filter(x => x.id != id); saveData(); SFX.del(); UI.showToast('Dihapus'); });
+window.saveIncome = (e) => { e.preventDefault();
   state.incomes.push({ id: Date.now(), title: document.getElementById('income-title').value.trim(),
-    amount: parseInt(document.getElementById('income-amount').value, 10), date: document.getElementById('income-date').value || todayISO() });
-  e.target.reset(); document.getElementById('income-date').value = todayISO(); saveData(); UI.showToast('Pemasukan dicatat');
-};
+    amount: parseInt(document.getElementById('income-amount').value,10), date: document.getElementById('income-date').value || todayISO() });
+  e.target.reset(); document.getElementById('income-date').value = todayISO(); saveData(); UI.showToast('Pemasukan dicatat'); };
 
-/* ---- parser lokal ---- */
+/* ===== utang ===== */
+window.openDebtModal = () => { ['debt-name','debt-amount','debt-note'].forEach(id => document.getElementById(id).value = ''); openModal('debt-modal'); };
+window.saveDebt = () => {
+  const name = document.getElementById('debt-name').value.trim();
+  const amount = parseInt(document.getElementById('debt-amount').value,10);
+  if (!name || !amount) return UI.showToast('Isi nama & nominal', 'error');
+  state.debts.push({ id: Date.now(), type: document.getElementById('debt-type').value,
+    name, amount, note: document.getElementById('debt-note').value.trim(), date: todayISO(), paid: false });
+  saveData(); UI.closeAllModals(); SFX.save(); UI.showToast('Tercatat');
+};
+window.toggleDebt = (id) => { const d = state.debts.find(x => x.id == id); if (d) d.paid = !d.paid; saveData(); };
+window.deleteDebt = (id) => { state.debts = state.debts.filter(d => d.id != id); saveData(); SFX.del(); };
+
+/* ===== parser ===== */
 function parseLocal(text) {
   const out = { title:'', amount:0, date: todayISO(), category:'Lainnya' };
   let s = ' ' + text.toLowerCase() + ' ';
@@ -1020,370 +1271,273 @@ function parseLocal(text) {
     out.amount = Math.round(v); s = s.replace(nm[0], ' '); }
   const dm = s.match(/(\d{1,2})\s*(?:hari lalu|hr lalu)/);
   if (dm) { const d = new Date(); d.setDate(d.getDate() - parseInt(dm[1],10)); out.date = d.toISOString().slice(0,10); s = s.replace(dm[0], ' '); }
-  const rules = {
-    'Makanan Luar':['makan','nasi','warteg','kopi','bakso','ayam','resto','jajan','gofood','grabfood','cafe'],
-    'Bahan Masak':['sayur','telur','beras','minyak','bumbu','pasar','grocery','indomaret','alfamart','belanja'],
-    'Transportasi':['bensin','ojek','grab','gojek','parkir','tol','bus','pertalite','pertamax'],
+  const rules = { 'Makanan Luar':['makan','nasi','warteg','kopi','bakso','ayam','jajan','gofood','grabfood'],
+    'Bahan Masak':['sayur','telur','beras','minyak','bumbu','pasar','indomaret','alfamart','belanja'],
+    'Transportasi':['bensin','ojek','grab','gojek','parkir','tol','pertalite'],
     'Tagihan':['listrik','air','kuota','internet','kos','sewa','pulsa','token'],
-    'Kesehatan':['obat','dokter','vitamin','klinik'],
-    'Hiburan':['nonton','bioskop','game','langganan','spotify','netflix']
-  };
-  for (const [c, ws] of Object.entries(rules)) if (ws.some(w => s.includes(w))) { out.category = c; break; }
+    'Kesehatan':['obat','dokter','vitamin'], 'Hiburan':['nonton','bioskop','game','spotify','netflix'] };
+  for (const [c, w] of Object.entries(rules)) if (w.some(x => s.includes(x))) { out.category = c; break; }
   out.title = s.replace(/\s+/g,' ').replace(/^(tadi|barusan|baru|beli|bayar)\s+/g,'').trim();
   return out;
 }
-
 window.parseNatural = async () => {
-  const inp = document.getElementById('nl-input'), text = inp.value.trim();
-  if (!text) return;
+  const inp = document.getElementById('nl-input'), text = inp.value.trim(); if (!text) return;
   let p = parseLocal(text);
-  if (state.apiKey) {
-    UI.showLoading('Merapikan...');
-    try {
-      const raw = await callAI(`Ubah jadi JSON: title, amount (angka), category (salah satu: ${state.categories.join(', ')}), date (YYYY-MM-DD, hari ini ${todayISO()}). Kalimat: "${text}"`, null, true);
+  if (state.apiKey) { UI.showLoading('Merapikan...');
+    try { const raw = await callAI(`Ubah jadi JSON: title, amount, category (salah satu: ${state.categories.join(', ')}), date (YYYY-MM-DD, hari ini ${todayISO()}). Kalimat: "${text}"`, null, true);
       const j = JSON.parse(raw.replace(/```json/g,'').replace(/```/g,'').trim());
-      if (j.title) p.title = j.title;
-      if (j.amount) p.amount = Math.round(Number(j.amount));
+      if (j.title) p.title = j.title; if (j.amount) p.amount = Math.round(Number(j.amount));
       if (j.category && state.categories.includes(j.category)) p.category = j.category;
       if (/^\d{4}-\d{2}-\d{2}$/.test(j.date)) p.date = j.date;
-    } catch (e) { UI.showToast('AI gagal, parser lokal dipakai', 'error'); }
-    UI.hideLoading();
-  }
+    } catch (e) { UI.showToast('AI gagal, parser lokal', 'error'); } UI.hideLoading(); }
   document.getElementById('manual-title').value = p.title || text;
   document.getElementById('manual-amount').value = p.amount || '';
   document.getElementById('manual-date').value = p.date;
-  renderCategoryOptions();
-  document.getElementById('manual-cat').value = p.category;
-  inp.value = '';
+  renderCategoryOptions(); document.getElementById('manual-cat').value = p.category; inp.value = '';
 };
-
 window.startVoice = () => {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return UI.showToast('Browser tidak mendukung suara', 'error');
-  const r = new SR(); r.lang = 'id-ID'; r.interimResults = false;
-  document.getElementById('mic-btn').classList.add('text-genshin-gold');
+  const r = new SR(); r.lang = 'id-ID';
   r.onresult = (e) => { document.getElementById('nl-input').value = e.results[0][0].transcript; parseNatural(); };
-  r.onerror = () => UI.showToast('Gagal mendengar', 'error');
-  r.onend = () => document.getElementById('mic-btn').classList.remove('text-genshin-gold');
-  r.start();
+  r.onerror = () => UI.showToast('Gagal mendengar', 'error'); r.start();
 };
 
-/* ---- scan ---- */
+/* ===== scan ===== */
 window.handleFileUpload = async (e) => {
-  const file = e.target.files[0]; if (!file) return; e.target.value = '';
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
   UI.showLoading('Membaca struk...');
   try {
-    const dataUrl = await compressImage(file);
-    const b64 = dataUrl.split(',')[1];
+    const url = await compressImage(f), b64 = url.split(',')[1];
     let items = [], total = 0;
     try {
-      const raw = await callAI('Analisa struk. JSON: {"total":<angka>,"items":[{"name":"","qty":1,"unit":"","price":0}]}', b64, true);
+      const raw = await callAI('Analisa struk. JSON: {"total":0,"items":[{"name":"","qty":1,"unit":"","price":0}]}', b64, true);
       const d = JSON.parse(raw.replace(/```json/g,'').replace(/```/g,'').trim());
-      items = (d.items || []).map(i => ({ name:String(i.name||'Item'), qty:Number(i.qty)||1, unit:String(i.unit||''), price:Number(i.price)||0 }));
+      items = (d.items||[]).map(i => ({ name:String(i.name||'Item'), qty:Number(i.qty)||1, unit:String(i.unit||''), price:Number(i.price)||0 }));
       total = Number(d.total) || 0;
-    } catch (aiErr) {
-      items = await ocrFallback(dataUrl);
-      total = items.reduce((s,i) => s + i.price, 0);
-      UI.showToast('AI gagal, pakai OCR lokal', 'error');
-    }
+    } catch (err) { items = await ocrFallback(url); total = items.reduce((s,i) => s + i.price, 0);
+      UI.showToast('AI gagal, pakai OCR lokal', 'error'); }
     state.scanCache = items;
     document.getElementById('scan-total').value = total;
     document.getElementById('scan-title').value = 'Belanja';
     document.getElementById('scan-date').value = todayISO();
     document.getElementById('scan-items-container').innerHTML = items.length
       ? items.map((it,i) => `<div class="flex justify-between gap-2 text-sm border-b border-genshin-border/10 pb-1">
-          <input value="${esc(it.name)}" oninput="state.scanCache[${i}].name=this.value" class="bg-transparent flex-1 outline-none">
-          <span class="text-genshin-gold shrink-0">${it.qty} ${esc(it.unit)}</span></div>`).join('')
+        <input value="${esc(it.name)}" oninput="state.scanCache[${i}].name=this.value" class="bg-transparent flex-1 outline-none">
+        <span class="text-genshin-gold shrink-0">${it.qty} ${esc(it.unit)}</span></div>`).join('')
       : '<p class="empty-state">Tidak terbaca.</p>';
     UI.hideLoading(); openModal('scan-review-modal');
   } catch (err) { UI.hideLoading(); UI.showToast(err.message || 'Gagal', 'error'); }
 };
-
 async function ocrFallback(dataUrl) {
-  if (!window.Tesseract) {
-    await new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-      s.onload = res; s.onerror = rej; document.head.appendChild(s);
-    });
-  }
+  if (!window.Tesseract) await new Promise((res, rej) => { const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   const { data } = await Tesseract.recognize(dataUrl, 'ind');
   return data.text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
     const m = l.match(/^(.+?)\s+(\d[\d.]*)\s*$/);
     return m ? { name: m[1], qty: 1, unit: '', price: parseInt(m[2].replace(/\./g,''),10) || 0 } : null;
-  }).filter(Boolean).slice(0, 25);
+  }).filter(Boolean).slice(0,25);
 }
-
 window.confirmScanSave = () => {
-  const total = parseInt(document.getElementById('scan-total').value, 10) || 0;
+  const total = parseInt(document.getElementById('scan-total').value,10) || 0;
   const date = document.getElementById('scan-date').value || todayISO();
   if (total > 0) state.expenses.push({ id: Date.now(), title: document.getElementById('scan-title').value.trim() || 'Belanja',
     amount: total, date, category: 'Bahan Masak', note: 'scan' });
-  state.scanCache.forEach((it,i) => {
-    state.inventory.push({ id: Date.now()+i+1, name: it.name, qty: it.qty || 1, unit: it.unit || '', exp: '' });
-    if (it.price > 0) state.priceLog.push({ name: it.name.toLowerCase(), unit: it.price / (it.qty||1), date });
-  });
-  state.scanCache = []; saveData(); UI.closeAllModals(); UI.showToast('Tersimpan'); navigate('dashboard');
+  state.scanCache.forEach((it,i) => { state.inventory.push({ id: Date.now()+i+1, name: it.name, qty: it.qty||1, unit: it.unit||'', exp: '' });
+    if (it.price > 0) state.priceLog.push({ name: it.name.toLowerCase(), unit: it.price/(it.qty||1), date }); });
+  state.scanCache = []; saveData(); UI.closeAllModals(); SFX.save(); UI.showToast('Tersimpan'); navigate('dashboard');
 };
 
-/* ---- inventory ---- */
+/* ===== inventory ===== */
 window.openInventoryModal = () => { ['inv-name','inv-qty','inv-unit','inv-price','inv-exp'].forEach(id => document.getElementById(id).value = ''); openModal('inventory-add-modal'); };
-window.saveInventoryManual = (e) => {
-  e.preventDefault();
-  const name = document.getElementById('inv-name').value.trim();
-  const qty = parseFloat(document.getElementById('inv-qty').value) || 1;
+window.saveInventoryManual = (e) => { e.preventDefault();
+  const name = document.getElementById('inv-name').value.trim(), qty = parseFloat(document.getElementById('inv-qty').value) || 1;
   const price = parseFloat(document.getElementById('inv-price').value) || 0;
   state.inventory.push({ id: Date.now(), name, qty, unit: document.getElementById('inv-unit').value.trim(), exp: document.getElementById('inv-exp').value });
   if (price > 0) state.priceLog.push({ name: name.toLowerCase(), unit: price/qty, date: todayISO() });
-  saveData(); UI.closeAllModals(); UI.showToast('Masuk tas');
-};
-window.adjustStock = (id, d) => {
-  const it = state.inventory.find(x => x.id == id); if (!it) return;
-  it.qty = Math.round((it.qty + d) * 10) / 10;
-  if (it.qty <= 0) state.inventory = state.inventory.filter(x => x.id != id);
-  saveData();
-};
+  saveData(); UI.closeAllModals(); UI.showToast('Masuk tas'); };
+window.adjustStock = (id, d) => { const it = state.inventory.find(x => x.id == id); if (!it) return;
+  it.qty = Math.round((it.qty + d)*10)/10; if (it.qty <= 0) state.inventory = state.inventory.filter(x => x.id != id); saveData(); };
 window.deleteInventory = (id) => { state.inventory = state.inventory.filter(x => x.id != id); saveData(); };
-
 window.callAIChef = async () => {
   const m = state.view.month, allow = Math.max(0, Math.floor((budgetFor(m) - sumOf(expensesOf(m))) / daysLeft(m)));
   const inv = state.inventory.map(i => `- ${i.name} (${i.qty} ${i.unit})`).join('\n');
   UI.showLoading('Memikirkan resep...');
-  try {
-    const md = await callAI(`Kamu Xiangling. Buat 1 resep dari bahan ini, 1 panci/rice cooker, 1 porsi. Jatah hari ini Rp ${allow}. Sebut perkiraan biaya tambahan dan jangan lewat jatah. Markdown, bahasa santai. Bahan: ${inv || '(kosong, kasih resep minimarket murah)'}`);
+  try { const md = await callAI(`Kamu Xiangling. 1 resep dari bahan ini, 1 panci, 1 porsi. Jatah hari ini Rp ${allow}. Markdown. Bahan: ${inv || '(kosong)'}`);
     document.getElementById('ai-modal-content').innerHTML = marked.parse(md);
-    UI.hideLoading(); openModal('ai-modal');
+    state.flags.chef = true; persistOnly(); UI.hideLoading(); openModal('ai-modal');
   } catch (e) { UI.hideLoading(); UI.showToast(e.message || 'AI gagal', 'error'); }
 };
 
-/* ---- jadwal ---- */
-window.addScheduleTask = (e) => {
-  e.preventDefault();
+/* ===== jadwal ===== */
+window.addScheduleTask = (e) => { e.preventDefault();
   state.schedule.push({ id: Date.now(), task: document.getElementById('task-input').value.trim(),
     remind: document.getElementById('task-remind').value || '', done: false, notified: false });
-  e.target.reset(); saveData();
-};
+  e.target.reset(); saveData(); };
 window.toggleTask = (id) => { const t = state.schedule.find(x => x.id == id); if (t) t.done = !t.done; saveData(); };
 window.deleteTask = (id) => { state.schedule = state.schedule.filter(t => t.id != id); saveData(); };
-window.requestNotif = () => {
-  if (!('Notification' in window)) return UI.showToast('Tidak didukung', 'error');
-  Notification.requestPermission().then(p => UI.showToast(p === 'granted' ? 'Pengingat aktif' : 'Ditolak', p === 'granted' ? 'success' : 'error'));
-};
+window.requestNotif = () => { if (!('Notification' in window)) return UI.showToast('Tidak didukung', 'error');
+  Notification.requestPermission().then(p => UI.showToast(p === 'granted' ? 'Aktif' : 'Ditolak', p === 'granted' ? 'success' : 'error')); };
 function checkReminders() {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const now = Date.now(); let ch = false;
-  state.schedule.forEach(t => {
-    if (t.done || t.notified || !t.remind) return;
+  state.schedule.forEach(t => { if (t.done || t.notified || !t.remind) return;
     const at = new Date(t.remind).getTime();
-    if (at <= now && now - at < 3600000) { new Notification("Paimon's Pocket", { body: t.task }); t.notified = true; ch = true; }
-  });
+    if (at <= now && now - at < 3600000) { new Notification("Paimon's Pocket", { body: t.task }); t.notified = true; ch = true; } });
   if (ch) persistOnly();
 }
 
-/* ---- goals ---- */
+/* ===== goals / amplop / budget ===== */
 window.openGoalModal = () => { ['goal-name','goal-target','goal-monthly'].forEach(id => document.getElementById(id).value = ''); openModal('goal-modal'); };
-window.saveGoal = () => {
-  const name = document.getElementById('goal-name').value.trim();
-  const target = parseInt(document.getElementById('goal-target').value, 10);
-  if (!name || !target) return UI.showToast('Isi nama & nominal', 'error');
-  state.goals.push({ id: Date.now(), name, target, monthly: parseInt(document.getElementById('goal-monthly').value,10) || 0, saved: 0 });
-  saveData(); UI.closeAllModals(); UI.showToast('Target dibuat');
-};
-window.addToGoal = (id) => {
-  const g = state.goals.find(x => x.id == id); if (!g) return;
-  const v = parseInt(prompt('Tambah tabungan:', '50000'), 10); if (!v) return;
-  g.saved = Math.min(g.saved + v, g.target); saveData(); UI.showToast('Ditambah');
-};
+window.saveGoal = () => { const n = document.getElementById('goal-name').value.trim(), t = parseInt(document.getElementById('goal-target').value,10);
+  if (!n || !t) return UI.showToast('Isi nama & nominal', 'error');
+  state.goals.push({ id: Date.now(), name:n, target:t, monthly: parseInt(document.getElementById('goal-monthly').value,10) || 0, saved:0 });
+  saveData(); UI.closeAllModals(); UI.showToast('Target dibuat'); };
+window.addToGoal = (id) => { const g = state.goals.find(x => x.id == id); if (!g) return;
+  const v = parseInt(prompt('Tambah tabungan:','50000'),10); if (!v) return;
+  g.saved = Math.min(g.saved + v, g.target); saveData(); UI.showToast('Ditambah'); };
 window.deleteGoal = (id) => { state.goals = state.goals.filter(g => g.id != id); saveData(); };
-
-/* ---- amplop ---- */
-window.openEnvelopeModal = () => {
-  const env = envOf(state.view.month);
+window.openEnvelopeModal = () => { const env = envOf(state.view.month);
   document.getElementById('envelope-form').innerHTML = state.categories.map(c =>
     `<div class="flex items-center gap-2"><span class="text-xs flex-1 truncate">${esc(c)}</span>
      <input type="number" min="0" data-cat="${esc(c)}" value="${env[c] || 0}" class="genshin-input p-2 text-xs w-28"></div>`).join('');
-  openModal('envelope-modal');
-};
-window.saveEnvelopes = () => {
-  const env = envOf(state.view.month);
-  document.querySelectorAll('#envelope-form input').forEach(i => { env[i.dataset.cat] = parseInt(i.value,10) || 0; });
-  saveData(); UI.closeAllModals(); UI.showToast('Amplop disimpan');
-};
-window.autoDistribute = () => {
-  const total = budgetFor(state.view.month);
+  openModal('envelope-modal'); };
+window.saveEnvelopes = () => { const env = envOf(state.view.month);
+  document.querySelectorAll('#envelope-form input').forEach(i => env[i.dataset.cat] = parseInt(i.value,10) || 0);
+  saveData(); UI.closeAllModals(); UI.showToast('Amplop disimpan'); };
+window.autoDistribute = () => { const total = budgetFor(state.view.month);
   if (!total) return UI.showToast('Atur plafon dulu', 'error');
-  const pct = { 'Makanan Luar':0.3, 'Bahan Masak':0.2, 'Transportasi':0.15, 'Tagihan':0.2, 'Kesehatan':0.05, 'Hiburan':0.05, 'Lainnya':0.05 };
+  const pct = { 'Makanan Luar':.3, 'Bahan Masak':.2, 'Transportasi':.15, 'Tagihan':.2, 'Kesehatan':.05, 'Hiburan':.05, 'Lainnya':.05 };
   const env = envOf(state.view.month);
-  state.categories.forEach(c => env[c] = Math.round(total * (pct[c] || 0.05)));
-  saveData(); UI.showToast('Dibagi otomatis');
-};
-
-/* ---- budget & bulan ---- */
+  state.categories.forEach(c => env[c] = Math.round(total * (pct[c] || .05)));
+  saveData(); UI.showToast('Dibagi otomatis'); };
 window.shiftMonth = (d) => { state.view.month = shiftMonthKey(state.view.month, d); ensureBudget(state.view.month); persistOnly(); renderDashboard(); };
 window.goThisMonth = () => { state.view.month = monthOf(todayISO()); ensureBudget(state.view.month); persistOnly(); renderDashboard(); };
 window.openBudgetModal = () => { document.getElementById('budget-input').value = budgetFor(state.view.month); openModal('budget-modal'); };
-window.saveBudget = () => {
-  const v = parseInt(document.getElementById('budget-input').value, 10);
-  state.budgets[state.view.month] = isNaN(v) ? 0 : Math.max(v, 0);
-  saveData(); UI.closeAllModals(); UI.showToast('Plafon diperbarui');
-};
+window.saveBudget = () => { const v = parseInt(document.getElementById('budget-input').value,10);
+  state.budgets[state.view.month] = isNaN(v) ? 0 : Math.max(v,0); saveData(); UI.closeAllModals(); UI.showToast('Plafon diperbarui'); };
 
-/* ---- simulator ---- */
+/* ===== simulator ===== */
 window.openSimulator = () => { document.getElementById('sim-input').value = ''; document.getElementById('sim-result').innerHTML = ''; openModal('sim-modal'); };
 document.addEventListener('input', (e) => {
   if (e.target.id !== 'sim-input') return;
-  const v = parseInt(e.target.value, 10) || 0;
-  const m = state.view.month, rem = budgetFor(m) - sumOf(expensesOf(m)) - v;
-  const dl = daysLeft(m), after = Math.max(0, Math.floor(rem / dl));
+  const v = parseInt(e.target.value,10) || 0, m = state.view.month;
+  const rem = budgetFor(m) - sumOf(expensesOf(m)) - v, dl = daysLeft(m);
   const box = document.getElementById('sim-result');
   if (!v) { box.innerHTML = ''; return; }
-  box.innerHTML = rem < 0
-    ? `<p class="text-genshin-danger">Lewat ${UI.formatIDR(-rem)}. Jatah harian jadi nol selama ${dl} hari.</p>`
-    : `<p>Jatah harian jadi <b class="text-genshin-gold">${UI.formatIDR(after)}</b> selama ${dl} hari.</p>
-       <p class="${after < 10000 ? 'text-genshin-danger' : 'text-genshin-ok'} text-[11px]">${after < 10000 ? 'Ketat. Pikir lagi.' : 'Masih aman.'}</p>`;
+  box.innerHTML = rem < 0 ? `<p class="text-genshin-danger">Lewat ${UI.formatIDR(-rem)}. Jatah harian nol ${dl} hari.</p>`
+    : `<p>Jatah harian jadi <b class="text-genshin-gold">${UI.formatIDR(Math.floor(rem/dl))}</b>.</p>`;
 });
-window.simCommit = () => {
-  const v = parseInt(document.getElementById('sim-input').value, 10); if (!v) return;
-  const t = prompt('Nama barang:', 'Belanja'); if (t === null) return;
+window.simCommit = () => { const v = parseInt(document.getElementById('sim-input').value,10); if (!v) return;
+  const t = prompt('Nama barang:','Belanja'); if (t === null) return;
   state.expenses.push({ id: Date.now(), title: t || 'Belanja', amount: v, date: todayISO(), category: state.categories[0], note: 'simulasi' });
-  saveData(); UI.closeAllModals(); UI.showToast('Dicatat'); beep(700);
-};
+  saveData(); UI.closeAllModals(); SFX.save(); UI.showToast('Dicatat'); };
 
-/* ---- QR transfer ---- */
-let qrChunks = [], qrIdx = 0, qrScanStream = null, qrBuf = {};
+/* ===== QR ===== */
+let qrChunks = [], qrIdx = 0, qrStream = null, qrBuf = {};
 window.openQR = () => { openModal('qr-modal'); qrMode('show'); };
-window.qrMode = (mode) => {
-  document.getElementById('qr-show-area').classList.toggle('hidden', mode !== 'show');
+window.qrMode = (mode) => { document.getElementById('qr-show-area').classList.toggle('hidden', mode !== 'show');
   document.getElementById('qr-scan-area').classList.toggle('hidden', mode !== 'scan');
-  if (mode === 'show') buildQR(); else startQR();
-};
-function buildQR() {
-  stopQR();
-  const data = LZString.compressToEncodedURIComponent(JSON.stringify(state));
-  qrChunks = data.match(/[\s\S]{1,700}/g) || [];
-  qrIdx = 0; drawQR();
-}
-function drawQR() {
-  const el = document.getElementById('qr-canvas'); el.innerHTML = '';
-  if (!qrChunks.length) return;
+  mode === 'show' ? buildQR() : startQR(); };
+function buildQR() { stopQR();
+  qrChunks = (LZString.compressToEncodedURIComponent(JSON.stringify(state)) || '').match(/[\s\S]{1,700}/g) || [];
+  qrIdx = 0; drawQR(); }
+function drawQR() { const el = document.getElementById('qr-canvas'); el.innerHTML = ''; if (!qrChunks.length) return;
   new QRCode(el, { text: `P|${qrIdx+1}|${qrChunks.length}|${qrChunks[qrIdx]}`, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.L });
-  document.getElementById('qr-progress').textContent = `Bagian ${qrIdx+1} dari ${qrChunks.length} · ukuran ${(JSON.stringify(state).length/1024).toFixed(1)} KB`;
-}
+  document.getElementById('qr-progress').textContent = `Bagian ${qrIdx+1}/${qrChunks.length}`; }
 window.qrPage = (d) => { qrIdx = Math.min(Math.max(qrIdx + d, 0), qrChunks.length - 1); drawQR(); };
+async function startQR() { try {
+  qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+  const v = document.getElementById('qr-video'); v.srcObject = qrStream; await v.play(); qrBuf = {};
+  const c = document.createElement('canvas'), x = c.getContext('2d');
+  const tick = () => { if (!qrStream) return;
+    if (v.readyState === v.HAVE_ENOUGH_DATA) {
+      c.width = v.videoWidth; c.height = v.videoHeight; x.drawImage(v,0,0);
+      const img = x.getImageData(0,0,c.width,c.height), code = window.jsQR ? jsQR(img.data, c.width, c.height) : null;
+      if (code) { const p = code.data.split('|');
+        if (p[0] === 'P') { qrBuf[+p[1]] = p[3];
+          document.getElementById('qr-scan-status').textContent = `${Object.keys(qrBuf).length}/${p[2]}`;
+          if (Object.keys(qrBuf).length === +p[2]) {
+            const full = Object.keys(qrBuf).sort((a,b)=>a-b).map(k => qrBuf[k]).join('');
+            try { const j = JSON.parse(LZString.decompressFromEncodedURIComponent(full));
+              stopQR(); UI.closeAllModals();
+              confirmAction('Ganti data dengan hasil scan?', () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(j)); location.reload(); }); return;
+            } catch (e) {} } } }
+    } requestAnimationFrame(tick); };
+  tick();
+} catch (e) { UI.showToast('Kamera gagal', 'error'); } }
+window.stopQR = () => { if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; } };
 
-async function startQR() {
-  try {
-    qrScanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    const v = document.getElementById('qr-video'); v.srcObject = qrScanStream; await v.play();
-    qrBuf = {};
-    const c = document.createElement('canvas'), ctx = c.getContext('2d');
-    const tick = () => {
-      if (!qrScanStream) return;
-      if (v.readyState === v.HAVE_ENOUGH_DATA) {
-        c.width = v.videoWidth; c.height = v.videoHeight; ctx.drawImage(v, 0, 0);
-        const img = ctx.getImageData(0, 0, c.width, c.height);
-        const code = window.jsQR ? jsQR(img.data, c.width, c.height) : null;
-        if (code) {
-          const parts = code.data.split('|');
-          if (parts[0] === 'P') {
-            qrBuf[parseInt(parts[1],10)] = parts[3];
-            document.getElementById('qr-scan-status').textContent = `${Object.keys(qrBuf).length}/${parts[2]} bagian`;
-            if (Object.keys(qrBuf).length === parseInt(parts[2],10)) {
-              const full = Object.keys(qrBuf).sort((a,b)=>a-b).map(k => qrBuf[k]).join('');
-              try {
-                const json = JSON.parse(LZString.decompressFromEncodedURIComponent(full));
-                stopQR(); UI.closeAllModals();
-                confirmAction('Ganti data dengan hasil scan?', () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(json)); location.reload(); });
-                return;
-              } catch (e) { document.getElementById('qr-scan-status').textContent = 'QR rusak, ulangi'; }
-            }
-          }
-        }
-      }
-      requestAnimationFrame(tick);
-    };
-    tick();
-  } catch (e) { UI.showToast('Kamera gagal dibuka', 'error'); }
-}
-window.stopQR = () => { if (qrScanStream) { qrScanStream.getTracks().forEach(t => t.stop()); qrScanStream = null; } };
-
-/* ---- settings ---- */
+/* ===== settings ===== */
 window.saveSettings = () => {
-  const b = parseInt(document.getElementById('setting-budget').value, 10);
-  state.settings.defaultBudget = isNaN(b) ? 0 : Math.max(b, 0);
+  const b = parseInt(document.getElementById('setting-budget').value,10);
+  state.settings.defaultBudget = isNaN(b) ? 0 : Math.max(b,0);
   state.apiKey = document.getElementById('setting-apikey').value.trim();
   state.model = document.getElementById('setting-model').value.trim() || 'gemini-2.5-flash';
   state.persona = document.getElementById('setting-persona').value;
+  state.sfx = document.getElementById('setting-sfx').checked;
   const cats = document.getElementById('setting-cats').value.split(',').map(c => c.trim()).filter(Boolean);
   if (cats.length) state.categories = [...new Set(cats)];
-  document.getElementById('persona-name').textContent = PERSONA[state.persona]?.name || 'Paimon';
   saveData(); UI.showToast('Tersimpan');
 };
-
-window.exportData = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+window.exportData = () => { const blob = new Blob([JSON.stringify(state,null,2)], { type:'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `paimon-${todayISO()}.json`; a.click(); URL.revokeObjectURL(a.href); UI.showToast('Diunduh');
-};
+  a.download = `paimon-${todayISO()}.json`; a.click(); URL.revokeObjectURL(a.href);
+  state.flags.backup = true; persistOnly(); UI.showToast('Diunduh'); };
 window.exportCSV = () => {
-  const rows = [['tanggal','nama','jumlah','kategori','catatan']]
-    .concat(state.expenses.map(e => [e.date, e.title, e.amount, e.category, e.note || '']));
+  const rows = [['tanggal','nama','jumlah','kategori','catatan']].concat(state.expenses.map(e => [e.date,e.title,e.amount,e.category,e.note||'']));
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob(['\ufeff' + csv], { type:'text/csv' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `paimon-${todayISO()}.csv`; a.click(); URL.revokeObjectURL(a.href); UI.showToast('CSV diunduh');
-};
-window.importData = (e) => {
-  const f = e.target.files[0]; if (!f) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff'+csv], { type:'text/csv' }));
+  a.download = `paimon-${todayISO()}.csv`; a.click(); URL.revokeObjectURL(a.href); };
+window.importData = (e) => { const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
-  r.onload = (ev) => {
-    try {
-      const d = JSON.parse(ev.target.result);
+  r.onload = (ev) => { try { const d = JSON.parse(ev.target.result);
       if (!Array.isArray(d.expenses)) throw 0;
-      confirmAction('Ganti seluruh data dengan file ini?', () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); location.reload(); });
-    } catch (err) { UI.showToast('File tidak valid', 'error'); }
-  };
-  r.readAsText(f); e.target.value = '';
-};
-window.askReset = () => confirmAction('Hapus semua data?', () => { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(LEGACY_KEY); location.reload(); });
+      confirmAction('Ganti seluruh data?', () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); location.reload(); });
+    } catch (x) { UI.showToast('File tidak valid', 'error'); } };
+  r.readAsText(f); e.target.value = ''; };
+window.askReset = () => confirmAction('Hapus semua data?', () => {
+  localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(LEGACY_KEY); location.reload(); });
+window.handleAvatarUpload = (e) => { const f = e.target.files[0]; if (!f) return;
+  compressImage(f, 400, .8).then(d => { state.profilePic = d; saveData(); UI.showToast('Foto diganti'); }); e.target.value = ''; };
 
-window.handleAvatarUpload = (e) => {
-  const f = e.target.files[0]; if (!f) return;
-  compressImage(f, 400, 0.8).then(d => { state.profilePic = d; saveData(); UI.showToast('Foto diganti'); });
-  e.target.value = '';
-};
-
-/* ---- share target ---- */
 function handleShareParams() {
   const p = new URLSearchParams(location.search);
   const text = [p.get('title'), p.get('text'), p.get('url')].filter(Boolean).join(' ').trim();
   if (!text) return;
-  navigate('manual');
-  document.getElementById('nl-input').value = text.slice(0, 200);
-  setTimeout(() => { parseNatural(); UI.showToast('Data dibagikan, cek dulu'); }, 400);
+  navigate('manual'); document.getElementById('nl-input').value = text.slice(0,200);
+  setTimeout(parseNatural, 400);
 }
 
-/* ---- init ---- */
+/* ===== init ===== */
 function init() {
-  loadData();
+  loadData(); applyTheme();
   document.body.classList.toggle('stealth-mode', state.stealth);
-  document.getElementById('stealth-btn').innerHTML = `<i class="fa-solid fa-eye${state.stealth ? '-slash' : ''}"></i>`;
-  document.getElementById('sound-btn').innerHTML = `<i class="fa-solid fa-volume-${state.sound ? 'high' : 'xmark'}"></i>`;
+  document.getElementById('stealth-btn').innerHTML = `<i class="fa-solid fa-eye${state.stealth?'-slash':''}"></i>`;
   document.getElementById('setting-budget').value = state.settings.defaultBudget;
   document.getElementById('setting-apikey').value = state.apiKey;
   document.getElementById('setting-model').value = state.model;
   document.getElementById('setting-persona').value = state.persona;
+  document.getElementById('setting-theme').value = state.theme;
+  document.getElementById('setting-sfx').checked = state.sfx;
   document.getElementById('setting-cats').value = state.categories.join(', ');
-  document.getElementById('persona-name').textContent = PERSONA[state.persona]?.name || 'Paimon';
   document.getElementById('manual-date').value = todayISO();
   document.getElementById('income-date').value = todayISO();
-  renderAll();
-  navigate('dashboard');
-  handleShareParams();
+  document.querySelectorAll('input[data-amb]').forEach(i => i.value = state.ambient[i.dataset.amb] || 0);
+  const nz = document.getElementById('notes');
+  for (let i = 0; i < 9; i++) { const s = document.createElement('i');
+    s.className = 'fa-solid fa-music note';
+    s.style.left = (5 + Math.random()*90) + '%';
+    s.style.animationDelay = (Math.random()*6) + 's';
+    s.style.animationDuration = (5 + Math.random()*4) + 's';
+    nz.appendChild(s); }
+  renderAll(); renderPlaylist(); renderAchievements(); updatePlayerUI();
+  navigate('dashboard'); handleShareParams();
   setInterval(checkReminders, 60000);
+  setInterval(() => { if (state.theme === 'auto') applyTheme(); }, 600000);
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
-  </html>
+                                     </html>
